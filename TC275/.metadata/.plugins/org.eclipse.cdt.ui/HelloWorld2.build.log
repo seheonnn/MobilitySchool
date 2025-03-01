@@ -1,0 +1,13 @@
+14:18:56 **** Incremental Build of configuration TriCore Debug (TASKING) for project HelloWorld2 ****
+amk -j12 all 
+TASKING VX-toolset for AURIX Development Studio (non-commercial): program builder v1.1r8 Build 22011964
+Invoking: Print Size
+elfsize  "HelloWorld2.elf"
+Total sizes:
+ROM: 0x2bec (11244) = code: 0x2994 (10644) + romdata: 0x258 (600)
+RAM: 0x9594 (38292) = data + bss
+Finished building: HelloWorld2.siz
+ 
+
+14:18:56 Build Finished. 0 errors, 0 warnings. (took 121ms)
+
