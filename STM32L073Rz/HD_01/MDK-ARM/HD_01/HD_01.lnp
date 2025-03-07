@@ -1,8 +1,0 @@
---cpu Cortex-M0+
-"hd_01\startup_stm32l073xx.o"
-"hd_01\main.o"
-"hd_01\system_stm32l0xx.o"
---strict --scatter "HD_01\HD_01.sct"
---summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
---info sizes --info totals --info unused --info veneers
---list "HD_01.map" -o HD_01\HD_01.axf
