@@ -5,7 +5,7 @@
 비선점형 - 뺏지 못함. Task가 언제 끝날지 예상 가능
 
 ```
-// 실습 Timer Intertupt를 활용한 Scheduler
+// 실습 
     /**********************************************************************************************************************
  * \file Cpu0_Main.c
  * \copyright Copyright (C) Infineon Technologies AG 2019
