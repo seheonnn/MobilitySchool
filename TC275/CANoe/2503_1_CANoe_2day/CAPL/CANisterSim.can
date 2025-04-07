@@ -1,0 +1,1020 @@
+/*@!Encoding:1252*/
+/*****************************************************************************
+| Project Name:	Vector Acadamy - Training Network Simualtion
+| File Name: 	CANisterSim.can
+|
+| Author: 		Elmar Gschwind
+| Date: 		  12.02.2009
+| Updated:    22.02.2012 : new CANister functions implemented
+|             11.10.2012 : one CAPL file for CANalyzer and CANoe(with diagnostic)
+|
+| Description: simulates the node CANister
+|
+|-----------------------------------------------------------------------------
+|               C O P Y R I G H T
+|-----------------------------------------------------------------------------
+| Copyright (c) 2012 Vector Informatik GmbH               All rights reserved.
+|****************************************************************************/
+
+includes
+{
+#include "CANisterSimVariables.cin"
+
+#if CANOE
+  // Functions needed to use the OSEK TP implemented in this file
+  // osek_tp.dll has to be added to the network node CANister 
+      #include "CCI_Implementation.cin"
+  // own diag implementation for CANoe
+      #include "CANisterSimDiag.cin"
+#endif    
+}
+
+on start
+{
+//****************************************************************************
+// Initialization of global variables
+//****************************************************************************
+	wrdRotKnobValue	= 0;
+	intRotKnobMem	= 0;
+	intKey7Mem  	= kNoStress;
+
+	writeClear(0); // Clears the content of write window's system tab
+  writeClear(1); // Clears the content of write window's system tab
+  write ("***********************************************");
+  write ("*   Training Network Simulation CANister      *");
+  write ("*   ------------------------------------      *");
+  write ("*                                             *");
+  write ("*   Created by PTR for Training purposes      *");
+  write ("*   Copyright 2012 Vector Informatik GmbH     *");
+  write ("***********************************************");
+
+	setTimerCyclic (tmrMsgStatus, 200);
+	setTimerCyclic (tmrLEDStatus, 500);
+  setTimerCyclic (tmrMsgStatAB, 100);
+  setTimerCyclic (tmrMsgString, 200);
+  setTimerCyclic (tmrMsgMux,   1000);
+  setTimerCyclic (tmrMsgIdent, 2000);
+
+	@sysvar::CANister::sysLED17 = 1;
+
+// Configuration of Write Window Outupt
+#if CANOE
+    setWriteDbgLevel (0); // Only write statements with Priority 0 will be output
+#endif 
+}
+
+on timer tmrLEDStatus
+{
+//****************************************************************************
+// This timer is used to toggle the Status LED of CANister
+//****************************************************************************
+	
+	byte bytToggle;
+
+	sysSetVariableInt(sysvar::CANister::sysLEDStatus, bytToggle); 
+	bytToggle =! bytToggle;
+}
+
+on timer tmrMsgStatus
+{
+//****************************************************************************
+// Cyclic sending of CANister's status message
+//****************************************************************************	
+        	
+	msgStatus.DLC=4;
+	msgStatus.byte(0) = bytCounter++;
+	msgStatus.word(1) = swapWord(wrdRotKnobValue);
+	msgStatus.byte(3) = fctKeyState();
+
+// Tx Communication has been disabled by diagnostics request
+    if (intComEnabled == kDISABLED) 
+        return;
+        	
+	output (msgStatus);
+}
+
+byte fctKeyState (void)
+{
+//*****************************************************************************
+// This function determines the pressed keys. To put the value of key in the
+// right position there is a need for moving the corresponding key bit inside
+// of the State-variable. To avoid overwriting each step is saved by using an
+// OR-command. Finally the actual state of the keys is returned
+//*****************************************************************************	
+	
+	bytKeyState=0;
+
+	bytKeyState=bytKeyState|sysGetVariableInt(sysvar::CANister::sysKey1);
+	bytKeyState=bytKeyState|sysGetVariableInt(sysvar::CANister::sysKey2)<<1;
+	bytKeyState=bytKeyState|sysGetVariableInt(sysvar::CANister::sysKey3)<<2;
+	bytKeyState=bytKeyState|sysGetVariableInt(sysvar::CANister::sysKey4)<<3;
+	bytKeyState=bytKeyState|sysGetVariableInt(sysvar::CANister::sysKey5)<<4;
+	bytKeyState=bytKeyState|sysGetVariableInt(sysvar::CANister::sysKey6)<<5;
+	bytKeyState=bytKeyState|sysGetVariableInt(sysvar::CANister::sysKey7)<<6;
+	bytKeyState=bytKeyState|sysGetVariableInt(sysvar::CANister::sysKey8)<<7;
+
+	return bytKeyState;
+}
+
+on timer tmrRotKnobDelay
+{
+//****************************************************************************
+// Within this on timer event the value of the Rotary Knob signal is 
+// incremented or decremented, depending on the pushed button on the panel.
+// The first if-command checks whether the value of the Rotary Knob is
+// in-between 0 and 1023.
+//****************************************************************************
+int i;
+	if (wrdRotKnobValue >=0 && wrdRotKnobValue<=1023)
+	{
+		switch (fctRotKnobState())
+		{	
+			
+			//KeyMin pushed
+			case 1: if (wrdRotKnobValue<=1)
+						wrdRotKnobValue=0;
+					else
+						wrdRotKnobValue-=1; 
+					setTimer(tmrRotKnobDelay, 200);
+					break;
+			
+			//KeyMinMin pushed
+			case 2: if (wrdRotKnobValue<10)
+						wrdRotKnobValue=0;
+					else
+						wrdRotKnobValue-=10; 
+					setTimer(tmrRotKnobDelay, 200);
+					break;
+
+			//KeyMax pushed
+			case 4: if (wrdRotKnobValue>=1022)
+						wrdRotKnobValue=0x3ff;
+					else
+						wrdRotKnobValue+=1;
+					setTimer(tmrRotKnobDelay, 200);
+					break;
+			
+			//KeyMaxMax pushed
+			case 8: if (wrdRotKnobValue>1013)
+						wrdRotKnobValue=0x3ff;
+					else
+						wrdRotKnobValue+=10;
+					setTimer(tmrRotKnobDelay, 200);
+					break;
+			
+			default: cancelTimer(tmrRotKnobDelay);
+		}
+	}
+}
+
+byte fctRotKnobState (void)
+{
+//*****************************************************************************
+// This function determines which of the Keys to change the value of the Rotary
+// Knob has been pushed. Depending on the Key, the value of the Rotary Knob
+// will be increased or decreased (see event tmrRotKnobDelay).
+//*****************************************************************************	
+
+	byte bytRotKnobState;
+
+	bytRotKnobState=0;
+
+	bytRotKnobState=bytRotKnobState|sysGetVariableInt(sysvar::CANister::sysKeyMin);
+	bytRotKnobState=bytRotKnobState|sysGetVariableInt(sysvar::CANister::sysKeyMinMin)<<1;
+	bytRotKnobState=bytRotKnobState|sysGetVariableInt(sysvar::CANister::sysKeyMax)<<2;
+	bytRotKnobState=bytRotKnobState|sysGetVariableInt(sysvar::CANister::sysKeyMaxMax)<<3;
+
+	return bytRotKnobState;
+
+}
+
+on sysvar sysvar::CANister::sysKeyMax
+{
+//****************************************************************************
+// The if-command checks whether the Key has been pressed or released, because 
+// this event is called in both cases. If the key has been pressed, the timer
+// to calculate the Rotary Knob Value is set.
+//****************************************************************************	
+	
+	if (sysGetVariableInt(sysvar::CANister::sysKeyMax) == 1 && intRotKnobMem == kRotKnobTimerStopped)
+	{
+		setTimer(tmrRotKnobDelay, 10);
+		intRotKnobMem = kRotKnobTimerRunning;			
+	}
+
+	else if (sysGetVariableInt(sysvar::CANister::sysKeyMax) == 0 && intRotKnobMem == kRotKnobTimerRunning)
+		intRotKnobMem = kRotKnobTimerStopped;
+
+}
+
+on sysvar sysvar::CANister::sysKeyMin
+{
+//****************************************************************************
+// The if-command checks whether the Key has been pressed or released, because 
+// this event is called in both cases. If the key has been pressed, the timer
+// to calculate the Rotary Knob Value is set.
+//****************************************************************************	
+	
+	if (sysGetVariableInt(sysvar::CANister::sysKeyMin) == 1 && intRotKnobMem == kRotKnobTimerStopped)
+	{
+		setTimer(tmrRotKnobDelay, 10);
+		intRotKnobMem = kRotKnobTimerRunning;			
+	}
+
+	else if (sysGetVariableInt(sysvar::CANister::sysKeyMin)==0 && intRotKnobMem == kRotKnobTimerRunning)
+		intRotKnobMem = kRotKnobTimerStopped;
+
+}
+
+on sysvar sysvar::CANister::sysKeyMaxMax
+{
+//****************************************************************************
+// The if-command checks whether the Key has been pressed or released, because 
+// this event is called in both cases. If the key has been pressed, the timer
+// to calculate the Rotary Knob Value is set.
+//****************************************************************************	
+	
+	if (sysGetVariableInt(sysvar::CANister::sysKeyMaxMax) == 1 && intRotKnobMem == kRotKnobTimerStopped)
+	{
+		setTimer(tmrRotKnobDelay, 10);
+		intRotKnobMem = kRotKnobTimerRunning;			
+	}
+
+	else if (sysGetVariableInt(sysvar::CANister::sysKeyMaxMax) == 0 && intRotKnobMem == kRotKnobTimerRunning)
+		intRotKnobMem = kRotKnobTimerStopped;
+
+}
+
+on sysvar sysvar::CANister::sysKeyMinMin
+{
+//****************************************************************************
+// The if-command checks whether the Key has been pressed or released, because 
+// this event is called in both cases. If the key has been pressed, the timer
+// to calculate the Rotary Knob Value is set.
+//****************************************************************************	
+	
+	if (sysGetVariableInt(sysvar::CANister::sysKeyMinMin) == 1 && intRotKnobMem == kRotKnobTimerStopped)
+	{
+		setTimer(tmrRotKnobDelay, 10);
+		intRotKnobMem = kRotKnobTimerRunning;			
+	}
+
+	else if (sysGetVariableInt(sysvar::CANister::sysKeyMinMin) == 0 && intRotKnobMem == kRotKnobTimerRunning)
+		intRotKnobMem = kRotKnobTimerStopped;
+
+}
+
+on message 0x1a0
+{
+//****************************************************************************
+// The CANister will react to message 0x1a0 (frmLamps) by turning on/off the   
+// LEDs 1-8. Each bit of the byte 0 of message 0x1a0 represents the status of  
+// one LED. The LED is turned one when the bit has the value 1.
+//****************************************************************************	
+	int intLEDValue;
+	
+	intLEDValue=this.Byte(0);	
+
+	sysSetVariableInt(sysvar::CANister::sysLED1, (this.byte(0))&0x01);	
+	sysSetVariableInt(sysvar::CANister::sysLED2, (this.byte(0)>>1)&0x01);
+	sysSetVariableInt(sysvar::CANister::sysLED3, (this.byte(0)>>2)&0x01);
+	sysSetVariableInt(sysvar::CANister::sysLED4, (this.byte(0)>>3)&0x01);
+	sysSetVariableInt(sysvar::CANister::sysLED5, (this.byte(0)>>4)&0x01);
+	sysSetVariableInt(sysvar::CANister::sysLED6, (this.byte(0)>>5)&0x01);
+	sysSetVariableInt(sysvar::CANister::sysLED7, (this.byte(0)>>6)&0x01);
+	sysSetVariableInt(sysvar::CANister::sysLED8, (this.byte(0)>>7)&0x01);
+}
+
+on sysvar sysvar::CANister::sysKey8
+{
+//****************************************************************************
+// When pressing Key 8 of the CANister panel, the message 0x1a3 with a fixed
+// bit pattern is sent on the bus once.
+//****************************************************************************	
+
+	if (sysGetVariableInt(sysvar::CANister::sysKey8))
+	{
+		message 0x1a3 msgKey8;
+		msgKey8.DLC=4;
+		msgKey8.byte(0)=0xaf;
+		msgKey8.byte(1)=0xfe;
+		msgKey8.byte(2)=0xba;
+		msgKey8.byte(3)=0xff;
+
+        // Tx Communication has been disabled by diagnostics request
+        if (intComEnabled == kDISABLED) 
+            return;
+
+		output(msgKey8);
+	}
+}
+
+on sysvar sysvar::CANister::sysKey7
+{
+//****************************************************************************
+// When pressing Key 7 different bus loads are generated by messages 0x2a0 
+// and 0x2a1. There are three so called Stress levels signaled by LEDs 
+// Stress A and Stress B.
+// First if-command checks whether Key 7 has been pushed or released, because 
+// this procedure will react on both. The switch-command sets the timer and
+// the LEDs on the CANister panel depending on the stress level activated.
+//****************************************************************************
+
+	if (sysGetVariableInt(sysvar::CANister::sysKey7))
+	{
+		switch (intKey7Mem)
+		{
+			case kNoStress: cancelTimer(tmrStress);
+                            setTimer (tmrStress, 12);
+							intKey7Mem=kStressA;
+							sysSetVariableInt(sysvar::CANister::sysLEDStressA, 1);
+							break;
+			
+			case kStressA:  cancelTimer(tmrStress);
+                            setTimer (tmrStress, 5);
+							intKey7Mem=kStressB;
+							sysSetVariableInt(sysvar::CANister::sysLEDStressA, 0);
+							sysSetVariableInt(sysvar::CANister::sysLEDStressB, 1);
+						    break;
+
+			case kStressB:  cancelTimer(tmrStress);
+                            setTimer (tmrStress, 3);
+							intKey7Mem=kStressAB;
+							sysSetVariableInt(sysvar::CANister::sysLEDStressA, 1);
+							sysSetVariableInt(sysvar::CANister::sysLEDStressB, 1);
+						    break;
+
+			case kStressAB: cancelTimer (tmrStress);
+							intKey7Mem=kNoStress;
+							sysSetVariableInt(sysvar::CANister::sysLEDStressA, 0);
+							sysSetVariableInt(sysvar::CANister::sysLEDStressB, 0);
+						    break;
+		}
+	
+	}
+		
+
+
+}
+
+on timer tmrStress
+{
+//****************************************************************************
+// When pressing Key 7 different bus loads are generated by messages 0x2a0 
+// and 0x2a1. There are three so called Stress levels signaled by LEDs 
+// Stress A and Stress B. In this timer procedure the stress messages are 
+// sent on the bus using different timer values.
+//****************************************************************************
+	
+	message 0x2a0 msgStress1;
+	message 0x2a1 msgStress2;
+
+	msgStress1.DLC = 8;
+	msgStress2.DLC = 8;
+
+	msgStress1.byte(0)++;
+	msgStress1.byte(1) = 'S';
+	msgStress1.byte(2) = 't';
+	msgStress1.byte(3) = 'r';
+	msgStress1.byte(4) = 'e';
+	msgStress1.byte(5) = 's';
+	msgStress1.byte(6) = 's';
+	msgStress1.byte(7) = '.';
+
+	msgStress2.byte(0)++;
+	msgStress2.byte(1) = 'L';
+	msgStress2.byte(2) = 'e';
+	msgStress2.byte(3) = 'v';
+	msgStress2.byte(4) = 'e';
+	msgStress2.byte(5) = 'l';
+	msgStress2.byte(7) = '.';
+
+	
+
+	switch (intKey7Mem)
+		{
+			case kStressA:  setTimer (tmrStress, 12);
+							msgStress2.byte(6) = '1';
+							break;
+			
+			case kStressB:  setTimer (tmrStress, 5);
+							msgStress2.byte(6) = '2';
+						    break;
+
+			case kStressAB: setTimer (tmrStress, 3);
+							msgStress2.byte(6) = '3';
+						    break;
+
+			case kNoStress: cancelTimer (tmrStress);
+						    break;
+		}
+
+// Tx Communication has been disabled by diagnostics request
+    if (intComEnabled == kDISABLED) 
+        return;
+        		
+	output (msgStress1);
+	output (msgStress1);
+	output (msgStress2);
+	output (msgStress2);
+}
+
+on sysvar sysvar::CANister::sysKey1
+{
+//****************************************************************************
+// When pressing Key 1 or Key2 of the CANister panel, the message 0xa0 
+// is sent on the bus with a cycle time of 30ms. The sending is stopped again
+// once the buttons are released.
+// The if-command is checking if Key 1 has been pressed for the first time,
+// or if it has been released.
+//****************************************************************************	
+    
+	if (sysGetVariableInt(sysvar::CANister::sysKey1) == 1 && intKey1Mem == kKey12TimerStopped)
+	{
+		setTimer(tmrKey12, 0);
+		intKey1Mem = kKey12TimerRunning;			
+	}
+
+	else if (sysGetVariableInt(sysvar::CANister::sysKey1) == 0 && intKey1Mem == kKey12TimerRunning)
+	{
+		intKey1Mem = kKey12TimerStopped;
+		cancelTimer(tmrKey12);
+		fctSendKey12Message();
+		fctSendKey12Message();
+
+	}
+}
+
+on timer tmrKey12
+{
+//****************************************************************************
+// This timer is used to send out message 0xa0 with a cycle time of 30ms.
+//****************************************************************************
+	
+	fctSendKey12Message();
+	
+	setTimer(tmrKey12, 30);
+	
+}
+
+fctSendKey12Message (void)
+{
+//****************************************************************************
+// This function is used to send out message 0xa0 (frmKey12).
+//****************************************************************************
+	
+	message 0xa0 msgKey12;
+
+	msgKey12.DLC = 1;
+	msgKey12.byte(0) = sysgetVariableInt(sysvar::CANister::sysKey1) | sysgetVariableInt(sysvar::CANister::sysKey2) <<1;
+
+// Tx Communication has been disabled by diagnostics request
+    if (intComEnabled == kDISABLED) 
+        return;
+
+	output (msgKey12);
+}
+
+on sysvar sysvar::CANister::sysKey2
+{
+//****************************************************************************
+// When pressing Key 1 or Key2 of the CANister panel, the message 0xa0 
+// is sent on the bus with a cycle time of 30ms. The sending is stopped again
+// once the buttons are released.
+// The if-command is checking if Key 2 has been pressed for the first time,
+// or if it has been released.
+//****************************************************************************	
+
+	if (sysGetVariableInt(sysvar::CANister::sysKey2) == 1 && intKey2Mem == kKey12TimerStopped)
+	{
+		setTimer(tmrKey12, 0);
+		intKey2Mem = kKey12TimerRunning;			
+	}
+
+	else if (sysGetVariableInt(sysvar::CANister::sysKey2) == 0 && intKey2Mem == kKey12TimerRunning)
+	{
+		intKey2Mem = kKey12TimerStopped;
+		cancelTimer(tmrKey12);
+		fctSendKey12Message();
+		fctSendKey12Message();
+
+	}
+}
+
+on message 0x7b
+{
+//****************************************************************************
+// When CANister receives message 0x7b (frmSensorResult) it will respond by 
+// sending message 0x7a (frmLEDStatus) including the status of all LEDs on
+// the CANister.
+//****************************************************************************	
+
+	message 0x7a msgLEDState;
+	word wrdSensorValue;
+
+	wrdSensorValue = swapWord(this.word(1));
+
+	if (wrdSensorValue==0 || wrdSensorValue>62500 ||  wrdSensorValue==31875) // Signal Value =0 or >100 physical value
+	{
+		sysSetVariableInt(sysvar::CANister::sysLED11, 1);
+		sysSetVariableInt(sysvar::CANister::sysLED15, 0);
+		sysSetVariableInt(sysvar::CANister::sysLED14, 0);
+		sysSetVariableInt(sysvar::CANister::sysLED13, 0);
+	}
+	
+	else if (wrdSensorValue>0 && wrdSensorValue<6250) 		// Signal Value >0 and <11 physical value
+	{
+		sysSetVariableInt(sysvar::CANister::sysLED11, 0);
+		sysSetVariableInt(sysvar::CANister::sysLED15, 0);
+		sysSetVariableInt(sysvar::CANister::sysLED14, 0);
+		sysSetVariableInt(sysvar::CANister::sysLED13, 0);
+	}
+
+	else if (wrdSensorValue>=6250 && wrdSensorValue<=20625) 	// Signal Value>=11 and <33 physical value
+	{
+		sysSetVariableInt(sysvar::CANister::sysLED15, 1);
+		sysSetVariableInt(sysvar::CANister::sysLED14, 0);
+		sysSetVariableInt(sysvar::CANister::sysLED13, 0);
+		sysSetVariableInt(sysvar::CANister::sysLED11, 0);
+	}
+	
+	//else if (wrdSensorValue>20625 && wrdSensorValue<41875 && wrdSensorValue!=32500) // Signal Value>=33 and <67 physical value
+	else if (wrdSensorValue>20625 && wrdSensorValue<41875) // Signal Value>=33 and <67 physical value
+	{
+		sysSetVariableInt(sysvar::CANister::sysLED15, 1);
+		sysSetVariableInt(sysvar::CANister::sysLED14, 1);
+		sysSetVariableInt(sysvar::CANister::sysLED13, 0);
+		sysSetVariableInt(sysvar::CANister::sysLED11, 0);
+	}
+	
+	else // if (wrdSensorValue>=41875) 						// Signal Value>=67 physical value
+	{
+		sysSetVariableInt(sysvar::CANister::sysLED15, 1);
+		sysSetVariableInt(sysvar::CANister::sysLED14, 1);
+		sysSetVariableInt(sysvar::CANister::sysLED13, 1);
+		sysSetVariableInt(sysvar::CANister::sysLED11, 0);
+	}
+
+
+// Tx Communication has been disabled by diagnostics request
+    if (intComEnabled == kDISABLED) 
+        return;
+
+	msgLEDState.DLC = 3;
+    msgLEDState.byte(0) = fctLEDState1();
+    msgLEDState.byte(1) = fctLEDState2();
+    msgLEDState.byte(2) = fctLEDState3();
+
+	output (msgLEDState);
+	
+}
+
+byte fctLEDState1 (void)
+{
+//*****************************************************************************
+// This function determines the State of the LEDs. To put the value of the LEDs 
+// in the right position there is a need for moving the corresponding LED bit 
+// inside of the State-variable. To avoid overwriting each step is saved by 
+// using an OR-command. Finally the actual state of the LEDs is returned.
+// Please also refer to fctLEDState2 and fctLEDState3.
+//*****************************************************************************	
+
+	bytLEDState1 = 0;
+
+	bytLEDState1 = bytLEDState1 | sysGetVariableInt(sysvar::CANister::sysLED1);
+	bytLEDState1 = bytLEDState1 | sysGetVariableInt(sysvar::CANister::sysLED2)<<1;
+	bytLEDState1 = bytLEDState1 | sysGetVariableInt(sysvar::CANister::sysLED3)<<2;
+	bytLEDState1 = bytLEDState1 | sysGetVariableInt(sysvar::CANister::sysLED4)<<3;
+	bytLEDState1 = bytLEDState1 | sysGetVariableInt(sysvar::CANister::sysLED5)<<4;
+	bytLEDState1 = bytLEDState1 | sysGetVariableInt(sysvar::CANister::sysLED6)<<5;
+	bytLEDState1 = bytLEDState1 | sysGetVariableInt(sysvar::CANister::sysLED7)<<6;
+	bytLEDState1 = bytLEDState1 | sysGetVariableInt(sysvar::CANister::sysLED8)<<7;
+
+    dwrdLEDState = dwrdLEDState | bytLEDState1;
+
+	return bytLEDState1;
+}
+
+byte fctLEDState2 (void)
+{
+//*****************************************************************************
+// This function determines the State of the LEDs. To put the value of the LEDs 
+// in the right position there is a need for moving the corresponding LED bit 
+// inside of the State-variable. To avoid overwriting each step is saved by 
+// using an OR-command. Finally the actual state of the LEDs is returned.
+// Please also refer to fctLEDState2 and fctLEDState3.
+//*****************************************************************************	
+
+	bytLEDState2 = 0;
+
+	bytLEDState2 = bytLEDState2 | sysGetVariableInt(sysvar::CANister::sysLEDStressA);
+	bytLEDState2 = bytLEDState2 | sysGetVariableInt(sysvar::CANister::sysLEDStressB)<<1;
+	bytLEDState2 = bytLEDState2 | sysGetVariableInt(sysvar::CANister::sysLED11)<<2;
+	bytLEDState2 = bytLEDState2 | sysGetVariableInt(sysvar::CANister::sysLED12)<<3;
+	bytLEDState2 = bytLEDState2 | sysGetVariableInt(sysvar::CANister::sysLED13)<<4;
+	bytLEDState2 = bytLEDState2 | sysGetVariableInt(sysvar::CANister::sysLED14)<<5;
+	bytLEDState2 = bytLEDState2 | sysGetVariableInt(sysvar::CANister::sysLED15)<<6;
+	bytLEDState2 = bytLEDState2 | sysGetVariableInt(sysvar::CANister::sysLEDStatus)<<7;
+
+    dwrdLEDState = dwrdLEDState | (bytLEDState1 << 8);
+    
+	return bytLEDState2;
+}
+
+byte fctLEDState3 (void)
+{
+//*****************************************************************************
+// This function determines the State of the LEDs. To put the value of the LEDs 
+// in the right position there is a need for moving the corresponding LED bit 
+// inside of the State-variable. To avoid overwriting each step is saved by 
+// using an OR-command. Finally the actual state of the LEDs is returned.
+// Please also refer to fctLEDState2 and fctLEDState3.
+//*****************************************************************************	
+
+	bytLEDState3 = 0;
+
+	bytLEDState3 = bytLEDState3 | sysGetVariableInt(sysvar::CANister::sysLED17);
+	bytLEDState3 = bytLEDState3 | sysGetVariableInt(sysvar::CANister::sysLED18)<<1;
+	bytLEDState3 = bytLEDState3 | sysGetVariableInt(sysvar::CANister::sysLED19)<<2;
+	bytLEDState3 = bytLEDState3 | sysGetVariableInt(sysvar::CANister::sysLED20)<<3;
+
+    dwrdLEDState = dwrdLEDState | (bytLEDState1 << 16);
+
+	return bytLEDState3;
+}
+
+on sysvar sysvar::CANister::sysKey11
+{
+//****************************************************************************
+// When pressing Key 11 on the CANister panel, the value of the Signal Rotary
+// Knob (frmStatus) will be set to its minimum value (=0).
+// Diagnostics: When pressing Key 11, an entry into the fault memory is created
+//****************************************************************************	
+    
+	wrdRotKnobValue = 0;
+#if CANOE
+// Fault Memory Entry
+  if (@this == 1) // debounce Key 11
+    {
+        if (intMemDTC[3] == 0)
+        {
+            bytDTCCount++;
+            intMemDTC[3] = 1;
+        }
+
+        dwrdListOfDTC [3] = 0x000003;
+        fctDiagSaveEnvDataDTC (3);
+
+    }
+ 
+#endif 
+}
+
+on sysvar sysvar::CANister::sysKey15
+{
+//****************************************************************************
+// When pressing Key 15 on the CANister panel, the value of the Signal Rotary
+// Knob (frmStatus) will be set to its maximum value (=100).
+// Diagnostics: When pressing Key 15, an entry into the fault memory is created
+//****************************************************************************	
+    
+	wrdRotKnobValue = 1023;
+#if CANOE
+// Fault Memory Entry
+    if (@this == 1) // debounce Key 15
+    {
+        if (intMemDTC[4] == 0)
+        {
+            bytDTCCount++;
+            intMemDTC[4] = 1;
+        }
+
+        dwrdListOfDTC [4] = 0x000004;
+        fctDiagSaveEnvDataDTC (4);
+    } 
+#endif 
+}
+
+on timer tmrMsgStatAB
+{
+//****************************************************************************
+// Cyclic sending of CANister's message frmStatAB
+//****************************************************************************	
+	
+	byte    byteOne;
+    byte    byteTwo;
+    int     intStatA1;
+    int     intStatA2;
+    int     intStatA3; 
+    int     intStatB1;
+    int     intStatB1_Cnt;
+     
+    byteOne = 0;
+       
+    msgStatAB.DLC=2;
+
+// Setting value for Signal sigStatA1
+    if (intStatA1 <27)
+    {
+        intStatA1++;
+        byteOne = kStatA1_Value1;
+    }
+    else if (intStatA1 <54)
+    {
+        intStatA1++;
+        byteOne = kStatA1_Value2;
+    }
+    else
+    {
+        intStatA1 = 1;
+        byteOne = kStatA1_Value1;
+    }
+
+// Setting value for Signal sigStatA2
+    if (intStatA2 < 4)
+    {
+        intStatA2++;
+        byteOne = byteOne | (kStatA2_Value1 <<2);
+    }
+    else if (intStatA2 < 8)
+    {
+        intStatA2++;
+        byteOne = byteOne | (kStatA2_Value2 <<2);
+    }
+    else
+    {
+        intStatA2 = 1;
+        byteOne = byteOne | (kStatA2_Value1 <<2);
+    }
+
+// Setting value for Signal sigStatA3
+    if (intStatA3 < 67)
+    {
+        intStatA3++;
+        byteOne = byteOne | (kStatA3_Value1 << 6);
+    }
+    else if (intStatA3 < 134)
+    {
+        intStatA3++;
+        byteOne = byteOne | (kStatA3_Value2 << 6);
+    }
+    else
+    {
+        intStatA3 = 1;
+        byteOne = byteOne | (kStatA3_Value1 << 6);
+    }
+
+// Setting value for Signal sigStatB1
+    if (5 <= intStatB1_Cnt)
+    {
+        intStatB1_Cnt++;
+        byteTwo = kStatB1_Value3;
+        if (106 == intStatB1_Cnt)
+            intStatB1_Cnt = 0;
+    }
+    else
+    {
+        if (intStatB1 < 102)
+        {
+            intStatB1++;
+            byteTwo = kStatB1_Value1;
+        }
+        else if (intStatB1 <203)
+        {
+            intStatB1++;
+            byteTwo = kStatB1_Value2;
+        }
+        else
+        {
+            intStatB1 = 1;
+            byteTwo = kStatB1_Value1;
+            intStatB1_Cnt++;
+         }
+ 
+    }   
+
+
+	msgStatAB.byte (0) = byteOne;
+    msgStatAB.byte (1) = byteTwo;
+
+// Tx Communication has been disabled by diagnostics request
+    if (intComEnabled == kDISABLED) 
+        return;
+        	
+	output (msgStatAB);    
+}
+
+on timer tmrMsgString
+{
+//****************************************************************************
+// Cyclic sending of CANister's message frmString
+//****************************************************************************
+
+    msgString.DLC = 8;
+
+    msgString.byte (0) = 0x53;
+    msgString.byte (1) = 0x74;
+    msgString.byte (2) = 0x2e;
+    msgString.byte (3) = 0x50;
+    msgString.byte (4) = 0x61;
+    msgString.byte (5) = 0x75;
+    msgString.byte (6) = 0x6c;
+    msgString.byte (7) = 0x69;
+
+// Tx Communication has been disabled by diagnostics request
+    if (intComEnabled == kDISABLED) 
+        return;
+
+    output (msgString);
+}
+
+on timer tmrMsgMux
+{
+//****************************************************************************
+// Cyclic sending of CANister's message frmMux
+//****************************************************************************
+
+    msgMux.DLC = 8;  
+    
+    msgMux.byte (0) = 0xff;  
+    msgMux.byte (1) = 0xff;  
+    msgMux.byte (2) = 0xff;  
+    msgMux.byte (3) = 0xff;  
+    msgMux.byte (4) = 0xff;  
+    msgMux.byte (5) = 0xff;  
+    msgMux.byte (6) = 0xff;  
+    msgMux.byte (7) = 0xff; 
+    
+// Tx Communication has been disabled by diagnostics request
+    if (intComEnabled == kDISABLED) 
+        return; 
+
+    output (msgMux);
+}
+
+on timer tmrMsgIdent
+{
+//****************************************************************************
+// Cyclic sending with repetition 2 of CANister's multiplexor message frmIdent
+// Message content retrieved via diagnostics
+//****************************************************************************
+    
+// Tx Communication has been disabled by diagnostics request
+    if (intComEnabled == kDISABLED) 
+        return;
+
+    msgIdent.DLC = 8;
+
+// Sending first package
+    msgIdent.byte (0)  = 0x01;              // Multiplexor signal
+    msgIdent.dword (1) = dblSerialNumber;   // CANsiters Serial Number
+    msgIdent.word (5)  = dblCanDriver;      // CANsiter CAN Driver Version
+    msgIdent.byte (7) = 0xff;               // fill up emtpty bytes in message
+
+    output (msgIdent);
+
+// Sending second package
+    msgIdent.byte (0)  = 0x02;          // Multiplexor signal
+    msgIdent.dword (1) = dblConfigVer;  // CANister Config Version
+    msgIdent.word (5)  = dblOSVer;      // OS Version of CANister
+    msgIdent.byte (7) = 0xff;           // fill up emtpty bytes in message
+
+    output (msgIdent);
+
+// Sending third package
+    msgIdent.byte (0) = 0x03;           // Multiplexor signal
+    msgIdent.word (1) = dblDiagModule;  // DiagVersion of CANister
+    msgIdent.word (3) = 0xffff;         // fill up empty bytes in message
+    msgIdent.word (5) = dblTPVer;       // ISO TP Version of CANister
+    msgIdent.byte (7) = 0xff;           // fill up emtpty bytes in message
+
+    output (msgIdent);
+}
+
+  fctSetLEDs ()
+  {
+  //****************************************************************************
+  // This function sets the LED States after the Diagnostic Request LEDs_Write
+  // has been sent to the CANister
+  // Note: among others, also message 0x1a0 influences the state of CANister's
+  // LEDs. So, the LEDs that have been turned on using the Diagnostic Request 
+  // LEDs_Write might only stay on for a very short time. 
+  //****************************************************************************
+
+      @sysvar::CANister::sysLED1 = (dwrdLEDState & 0x00000001);
+      @sysvar::CANister::sysLED2 = (dwrdLEDState >> 1) & 0x00000001;
+      @sysvar::CANister::sysLED3 = (dwrdLEDState >> 2) & 0x00000001;
+      @sysvar::CANister::sysLED4 = (dwrdLEDState >> 3) & 0x00000001;
+      @sysvar::CANister::sysLED5 = (dwrdLEDState >> 4) & 0x00000001;
+      @sysvar::CANister::sysLED6 = (dwrdLEDState >> 5) & 0x00000001;
+      @sysvar::CANister::sysLED7 = (dwrdLEDState >> 6) & 0x00000001;
+      @sysvar::CANister::sysLED8 = (dwrdLEDState >> 7) & 0x00000001;
+      @sysvar::CANister::sysLEDStressA = (dwrdLEDState >> 8) & 0x00000001;
+      @sysvar::CANister::sysLEDStressB = (dwrdLEDState >> 9) & 0x00000001;
+      @sysvar::CANister::sysLED11 = (dwrdLEDState >> 10) & 0x00000001;
+      @sysvar::CANister::sysLED12 = (dwrdLEDState >> 11) & 0x00000001;
+      @sysvar::CANister::sysLED13 = (dwrdLEDState >> 12) & 0x00000001;
+      @sysvar::CANister::sysLED14 = (dwrdLEDState >> 13) & 0x00000001;
+      @sysvar::CANister::sysLED15 = (dwrdLEDState >> 14) & 0x00000001;
+      @sysvar::CANister::sysLEDStatus = (dwrdLEDState >> 15) & 0x00000001;
+      @sysvar::CANister::sysLED17 = (dwrdLEDState >> 16) & 0x00000001;
+      @sysvar::CANister::sysLED18 = (dwrdLEDState >> 17) & 0x00000001;
+      @sysvar::CANister::sysLED19 = (dwrdLEDState >> 18) & 0x00000001;
+      @sysvar::CANister::sysLED20 = (dwrdLEDState >> 19) & 0x00000001;
+
+  }
+
+
+fctInit ()
+{
+//****************************************************************************
+// This function serves to initialize all global variables with their
+// default values.
+//****************************************************************************
+
+// Variables
+	wrdRotKnobValue     = 0;
+	intRotKnobMem       = kRotKnobTimerStopped;
+	intKey7Mem          = 0;
+	intKey1Mem          = 0;
+	intKey2Mem          = 0;
+  bytKeyState         = 0;
+	bytLEDState1        = 0;
+  bytLEDState2        = 0;
+	bytLEDState3        = 0;
+  dwrdLEDState        = 0x00010000;   // LED17 (above T1) turned on to show config state
+  lngCycleCntRoutine  = 0;
+  intStepValCntRoutine= 0;
+
+
+// Diagnostics Variables
+  dblSerialNumber      = 0x00332211;
+  dblCanDriver         = 0x3e8;
+  dblConfigVer         = 0x1ff;
+  dblDiagModule        = 0x161c;
+  dblOSVer             = 0xc06;
+  dblTPVer             = 0xaa0;
+  dblProcType          = 0x03;
+  dblDiagVer           = 0x5660;
+  strncpy (chrEcuName, "CANister V7.5", 14);
+  dblPwmInput          = 0xffff;
+  dblVoltage           = 0x83;
+  dblCurrent           = 0x03;
+  dblResistor          = 0x0004;
+  dblCANisterStatus    = 0x00;
+  dblVariantCountry    = 0x01; 
+  dblVariantType       = 0x02;
+  dblVariantSpecial    = 0x00;
+  intSession           = kDEFAULT_SESSION; 
+  intSecurityAccess    = kLOCKED;
+  dblSecureSeed        = 0;
+  dblSecureKey         = 0;
+  bytCounterValue      = 0;
+  intCntRoutineRun     = kSTOPPED;
+  intComEnabled        = kENABLED;
+  intHardReset         = kINACTIVE;
+
+
+// Stop and restart sending of cyclic messages
+  cancelTimer (tmrMsgStatus);
+	cancelTimer (tmrLEDStatus);
+  cancelTimer (tmrMsgStatAB);
+  cancelTimer (tmrMsgString);
+  cancelTimer (tmrMsgMux);
+  cancelTimer (tmrMsgIdent);
+    
+  setTimerCyclic (tmrMsgStatus, 200);
+	setTimerCyclic (tmrLEDStatus, 500);
+  setTimerCyclic (tmrMsgStatAB, 100);
+  setTimerCyclic (tmrMsgString, 200);
+  setTimerCyclic (tmrMsgMux,   1000);
+  setTimerCyclic (tmrMsgIdent, 2000);
+
+// Stopp CANister' stress function
+  cancelTimer (tmrStress);
+
+// Stopp sending of T1 and T2 triggered message
+  cancelTimer(tmrKey12);
+
+// Set all LEDs back to default
+  fctSetLEDs ();
+
+#if CANOE
+// Stopp Counter Routine
+  cancelTimer (tmrCntRoutine);  
+#endif 
+
+// Stopp calculation of RotKnobValue
+  cancelTimer (tmrRotKnobDelay);
+
+// Set back message content to default values
+  msgStatus.dword (0)     = 0x00;
+  msgKey12.byte (0)       = 0x00;
+  msgKey8.qword (0)       = 0x00LL;
+  msgStatAB.word (0)      = 0x00;
+  msgString.qword (0)     = 0x00LL;
+  msgMux.qword (0)        = 0x00LL;
+  msgIdent.qword (0)      = 0x00LL;
+  msgCntRoutine.byte(0)   = 0x00;
+}
+

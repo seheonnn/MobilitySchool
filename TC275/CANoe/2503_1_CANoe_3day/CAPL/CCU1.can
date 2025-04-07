@@ -1,0 +1,46 @@
+﻿/*@!Encoding:65001*/
+includes
+{
+  
+}
+
+variables
+{
+  int gCount = 0;
+}
+
+on key 'h' // 대소문자 가림
+{
+  int a;
+  a = 11;
+  write("hello world %d", a);
+  
+  gCount = gCount + 1;
+  
+  if (gCount >= 5) {
+    stop();
+  }
+}
+
+// preStart -> Start ...... preStop -> stopMeasurement
+on preStop
+{
+  write("goodbye1");
+  deferStop(1);
+}
+
+on stopMeasurement
+{
+  int a;
+  write("goodbye2");
+  a = 10;
+  if (a == 10) {
+    int b;
+    b = 10;
+  }
+}
+
+on key 'a'
+{
+  write("gCount = %d", gCount);
+}

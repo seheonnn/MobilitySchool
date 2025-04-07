@@ -1,0 +1,131 @@
+variables
+{
+//****************************************************************************
+// Message Variables
+//****************************************************************************
+	message 0x1a1   msgStatus;
+	message 0xa0    msgKey12;
+	message 0x1a3   msgKey8;
+    message 0x7c    msgStatAB;
+    message 0xfc    msgString;
+    message 0x38A   msgMux;
+    message 0x45c   msgIdent;
+    message 0x3a0   msgCntRoutine;
+
+//****************************************************************************
+// Timer Variables
+//****************************************************************************
+	msTimer tmrMsgStatus;
+	msTimer tmrRotKnobDelay;
+	msTimer tmrLEDStatus;
+	msTimer tmrStress;
+	msTimer tmrKey12;
+    msTimer tmrMsgStatAB;
+    msTimer tmrMsgString;
+    msTimer tmrMsgMux;
+    msTimer tmrMsgIdent;
+
+//****************************************************************************
+// System Constants
+//****************************************************************************
+    // Key7 Stress Levels
+	const int kNoStress = 0;
+	const int kStressA 	= 1;
+	const int kStressB  = 2;
+	const int kStressAB = 3;
+
+    // Rotary Knob 
+	const int kRotKnobTimerStopped = 0;
+	const int kRotKnobTimerRunning = 1;
+
+    // Key12 
+	const int kKey12TimerStopped = 0;
+	const int kKey12TimerRunning = 1;
+
+    // Message frmStatAB
+    const int kStatA1_Value1 = 0;
+    const int kStatA1_Value2 = 1;
+    const int kStatA2_Value1 = 0;
+    const int kStatA2_Value2 = 15;
+    const int kStatA3_Value1 = 0;
+    const int kStatA3_Value2 = 3;
+    const int kStatB1_Value1 = 0;
+    const int kStatB1_Value2 = 100;
+    const int kStatB1_Value3 = 200;
+
+    // Diagnostics
+    const int   kDEFAULT_SESSION        = 0;
+    const int   kPROGRAMMING_SESSION    = 1;
+    const int   kLOCKED                 = 0;
+    const int   kUNLOCKED_LEVEL1        = 1;
+    const dword kKEY                    = 0x10305270;    
+    const int   kSTOPPED                = 0;
+    const int   kRUNNING                = 1;
+    const int   kENABLED                = 0;
+    const int   kDISABLED               = 1;
+    const int   kINACTIVE               = 0;
+    const int   kACTIVE                 = 1;
+    const int   kDTC_MAXNUMBER          = 5;
+
+//****************************************************************************
+// Other Variables
+//****************************************************************************
+	word    wrdRotKnobValue;
+	int     intRotKnobMem;
+	int	    intKey7Mem;
+	int     intKey1Mem;
+	int     intKey2Mem;
+    byte    bytCounter;
+    byte    bytKeyState;
+	byte    bytLEDState1;
+    byte    bytLEDState2;
+	byte    bytLEDState3;
+    dword   dwrdLEDState;   // used for diagRequests LEDs_Read and LEDs_Write
+    long    lngCycleCntRoutine;
+    int     intStepValCntRoutine;
+
+
+//****************************************************************************
+// Diagnostics Variables
+//****************************************************************************
+    // internal variables for the TP dll
+    const cIsTester = 0;                    // 0 means simulation mode of the diagnostics ECU
+    char  gECU[20] = "CANister";            // name of the ECU
+
+    // CANister Diagnostics Parameter
+    double dblSerialNumber      = 0x00332211;
+    double dblCanDriver         = 0x3e8;
+    double dblConfigVer         = 0x1ff;
+    double dblDiagModule        = 0x161c;
+    double dblOSVer             = 0xc06;
+    double dblTPVer             = 0xaa0;
+    double dblProcType          = 0x03;
+    double dblDiagVer           = 0x5660;
+    char   chrEcuName[14]       = "CANister V3.4";
+    double dblPwmInput          = 0xffff;
+    double dblVoltage           = 0x83;
+    double dblCurrent           = 0x03;
+    double dblResistor          = 0x0004;
+    double dblCANisterStatus    = 0x00;
+    double dblVariantCountry    = 0x01; 
+    double dblVariantType       = 0x02;
+    double dblVariantSpecial    = 0x00;
+    int    intSession           = 0; 
+    int    intSecurityAccess    = 0;
+    double dblSecureSeed;
+    double dblSecureKey;
+    byte   bytCounterValue      = 0;
+    int    intCntRoutineRun     = kSTOPPED;
+    int    intComEnabled        = kENABLED;
+    int    intHardReset         = kINACTIVE;
+    double dblDTCState          = 0;
+    byte   bytDTCCount          = 0x00;
+    int    intMemDTC [kDTC_MAXNUMBER]        = {0, 0, 0, 0, 0};
+    dword  dwrdListOfDTC [kDTC_MAXNUMBER]    = {0, 0, 0, 0, 0};
+    int    intListEntry         = 0;
+    byte   bytLED_EnvDTC [5]        = {0, 0, 0, 0, 0};
+    byte   bytSigCounter_EnvDTC [5] = {0, 0, 0, 0, 0};
+    word   wrdSigRotKnob_EnvDTC [5] = {0, 0, 0, 0, 0};
+    
+    
+}

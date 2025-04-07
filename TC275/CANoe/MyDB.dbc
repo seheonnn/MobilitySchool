@@ -1,0 +1,65 @@
+VERSION ""
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_: ABSECU GearboxECU EngineECU
+VAL_TABLE_ IdleInfo 1 "Idle" 0 "RUNNING" ;
+VAL_TABLE_ Pedalinfo 0 "OFF" ;
+
+
+BO_ 768 GearboxData300: 1 GearboxECU
+ SG_ sigEngineTorq : 0|8@1- (1,0) [0|0] ""  EngineECU
+
+BO_ 520 ABSData208: 1 ABSECU
+ SG_ sigWheelRLRR : 0|8@1- (1,0) [0|0] ""  GearboxECU
+
+BO_ 513 ABSData201: 1 ABSECU
+ SG_ sigWheelFLFR : 0|8@1- (1,0) [0|0] ""  GearboxECU
+
+BO_ 256 EngineData100: 3 EngineECU
+ SG_ sigEngineTemp : 16|8@1- (1,0) [0|0] "" Vector__XXX
+ SG_ sigEngineSpeed : 8|8@1- (1,0) [0|0] "" Vector__XXX
+ SG_ sigEngineIdle : 0|8@1- (1,0) [0|0] "" Vector__XXX
+
+BO_ 512 EngineData200: 2 EngineECU
+ SG_ sigThAngle : 9|6@1+ (1,0) [0|63] "" Vector__XXX
+ SG_ sigPedalPos : 0|9@1+ (1,0) [0|511] "" Vector__XXX
+
+
+
+BA_DEF_  "MultiplexExtEnabled" ENUM  "No","Yes";
+BA_DEF_  "BusType" STRING ;
+BA_DEF_DEF_  "MultiplexExtEnabled" "No";
+BA_DEF_DEF_  "BusType" "CAN";
+

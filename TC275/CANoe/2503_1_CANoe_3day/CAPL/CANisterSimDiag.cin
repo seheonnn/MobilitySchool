@@ -1,0 +1,783 @@
+/*@!Encoding:1252*/
+
+/*****************************************************************************
+| Project Name:	Vector Acadamy - Training Network Simualtion
+| File Name: 	CANisterSim.can
+|
+| Author: 		Elmar Gschwind
+| Date: 		  12.02.2009
+| Updated:    22.02.2012 : new CANister functions implemented
+|             11.10.2012 : one CAPL file for CANalyzer and CANoe(with diagnostic)
+|
+| Description: simulates the node CANister
+|
+|-----------------------------------------------------------------------------
+|               C O P Y R I G H T
+|-----------------------------------------------------------------------------
+| Copyright (c) 2012 Vector Informatik GmbH               All rights reserved.
+|****************************************************************************/
+
+variables
+{
+  msTimer tmrSecureTimer; // Diagnostics: Programming Session Timeout
+  msTimer tmrCntRoutine;
+  msTimer tmrHardReset;
+  msTimer tmrErrorFrame;
+
+}
+
+on diagRequest SerialNumber_Read
+{
+//****************************************************************************
+// Diag Request to read out CANsiter's serial number
+//****************************************************************************
+    diagResponse this respSerialRead;
+
+    diagSetParameter (respSerialRead, "SerialNumber", dblSerialNumber);
+
+    diagSendPositiveResponse (respSerialRead);
+
+    fctDiagStayInActiveSession ();
+}
+
+on diagRequest *
+{
+//****************************************************************************
+// Negative response to all diag requests that are not supported
+//****************************************************************************
+    diagResponse this respAll;
+
+    diagSendNegativeResponse (respAll, 0x10); // General rejection
+
+    fctDiagStayInActiveSession ();
+}
+
+on diagRequest DevelopmentData_Read
+{
+//****************************************************************************
+// Diag Request to read out CANsiter's Development Data
+//****************************************************************************
+    diagResponse this rspDevelopData;
+
+	diagSetParameter (rspDevelopData, "CanDriverVersion", dblCanDriver);
+    diagSetParameter (rspDevelopData, "CANister_Config_Version", dblConfigVer);
+	diagSetParameter (rspDevelopData, "DiagnosticModuleVersion", dblDiagModule);
+	diagSetParameter (rspDevelopData, "OperatingSystemVersion", dblOSVer);
+	diagSetParameter (rspDevelopData, "TransportLayerVersion", dblTPVer);
+	diagSendResponse (rspDevelopData);
+
+    fctDiagStayInActiveSession ();
+}
+
+on diagRequest ProcessorType_Read
+{
+//****************************************************************************
+// Diag Request to read out CANsiter's Processor Type
+//****************************************************************************
+    diagResponse this rspProcType;
+
+	diagSetParameter (rspProcType, "Processor_Type", dblProcType);
+	diagSendResponse (rspProcType);
+
+    fctDiagStayInActiveSession ();
+}
+
+on diagRequest DiagnosticVersion_Read
+{
+//****************************************************************************
+// Diag Request to read out CANsiter's Diagnostic Version Data
+//****************************************************************************
+    diagResponse this rspDiagVersion;
+
+	diagSetParameter (rspDiagVersion, "Diagnostic_Version_dump", dblDiagVer);
+	diagSendResponse (rspDiagVersion);
+
+    fctDiagStayInActiveSession ();
+}
+
+on diagRequest EcuIdentification_Read
+{
+//****************************************************************************
+// Diag Request to read out CANsiter's ECU Identification
+//****************************************************************************
+    diagResponse this rspReadEcuID;
+
+	diagSetParameter (rspReadEcuID, "Part_Number", chrEcuName);
+	diagSendResponse (rspReadEcuID);
+
+    fctDiagStayInActiveSession ();
+}
+
+on diagRequest PWMInput_Read
+{
+//****************************************************************************
+// Diag Request to read out CANsiter's PWM Input
+//****************************************************************************
+    diagResponse this rspPwmInput;
+
+	diagSetParameter (rspPwmInput, "PWMInput", dblPwmInput);
+	diagSendResponse (rspPwmInput);
+
+    fctDiagStayInActiveSession ();
+}
+
+on diagRequest AD_Values_Read
+{
+//****************************************************************************
+// Diag Request to read out CANsiter's A/D Values
+//****************************************************************************
+    diagResponse this rspDataAD;
+
+	diagSetParameter (rspDataAD, "Voltage", dblVoltage);
+	diagSetParameter (rspDataAD, "Current", dblCurrent);
+	diagSetParameter (rspDataAD, "Resistance", dblResistor);
+	diagSendResponse (rspDataAD);
+
+    fctDiagStayInActiveSession ();
+}
+
+on diagRequest RotaryKnob_Read
+{
+//****************************************************************************
+// Diag Request to read out CANsiter's Rotary Knob value
+//****************************************************************************
+    diagResponse this rspDataEngine;
+
+	diagSetParameter (rspDataEngine, "RotaryKnob", (double)wrdRotKnobValue);
+	diagSendResponse (rspDataEngine);
+
+    fctDiagStayInActiveSession ();
+}
+
+on diagRequest Keys_Read
+{
+//****************************************************************************
+// Diag Request to read out CANsiter's Key States
+//****************************************************************************
+    diagResponse this rspDataKeys;
+
+	diagSetParameter (rspDataKeys, "Keys", bytKeyState);
+	diagSendResponse (rspDataKeys);
+
+    fctDiagStayInActiveSession ();
+}
+
+on diagRequest SigCounter_Read
+{
+//****************************************************************************
+// Diag Request to read out CANsiter's Message Counter
+//****************************************************************************
+    diagResponse this rspMsgCounter;
+
+	diagSetParameter (rspMsgCounter, "SigCounterValue", bytCounter);
+	diagSendResponse (rspMsgCounter);
+
+    fctDiagStayInActiveSession ();
+
+}
+
+on diagRequest LEDs_Read
+{
+//****************************************************************************
+// Diag Request to read out CANsiter's LED States
+//****************************************************************************
+    diagResponse this rspDataLED;
+    
+	diagSetParameter (rspDataLED, "LEDStatus", dwrdLEDState);
+	diagSendResponse (rspDataLED);
+
+    fctDiagStayInActiveSession ();
+}
+
+on diagRequest CANisterStatus_Read
+{
+//****************************************************************************
+// Diag Request to read out CANsiter's Status
+//****************************************************************************
+    diagResponse this rspCANisterStatus;
+
+	diagSetParameter (rspCANisterStatus, "CANisterStatus", dblCANisterStatus);
+	diagSendResponse (rspCANisterStatus);
+
+    fctDiagStayInActiveSession ();
+}
+
+on diagRequest DefaultSession_Start
+{
+//****************************************************************************
+// Diag Request to change to Default Session
+//****************************************************************************
+    diagResponse this rspSessionCtrl;
+
+    intSession = kDEFAULT_SESSION;
+	if (diagGetSuppressResp (this) == 1) return; // positive response suppressed
+	
+	diagSetParameter (rspSessionCtrl, "P3", 50);
+	diagSetParameter (rspSessionCtrl, "P3Ex", 500);
+	diagSendResponse (rspSessionCtrl);
+
+}
+
+on diagRequest ProgrammingSession_Start
+{
+//****************************************************************************
+// Diag Request to read out CANsiter's Diagnostic Version Data
+//****************************************************************************
+    diagResponse this rspSessionCtrl;
+    
+    intSession = kPROGRAMMING_SESSION;
+	if (diagGetSuppressResp (this) == 1) return; // postivite response suppressed
+	
+	diagSetParameter (rspSessionCtrl, "P3", 50);
+	diagSetParameter (rspSessionCtrl, "P3Ex", 500);
+	diagSendResponse (rspSessionCtrl);
+
+    setTimer (tmrSecureTimer, 5000);
+}
+
+on timer tmrSecureTimer
+{
+//****************************************************************************
+// Programming Session Timeout: Setting back to Default Session
+//****************************************************************************
+    
+    intSession = kDEFAULT_SESSION;
+    intSecurityAccess = kLOCKED;
+}
+
+on diagRequest SerialNumber_Write
+{
+//****************************************************************************
+// Diag Request to write a serial number in CANister
+// Service is only supported when Programming Session is active and
+// Security Access has been carried out
+//****************************************************************************
+    diagResponse this rspWriteSN;
+    
+    if (intSession == kDEFAULT_SESSION || intSecurityAccess == kLOCKED)
+	{
+        
+		diagSendNegativeResponse (this, 0x7e);
+		return;
+	}
+    
+	dblSerialNumber = diagGetParameter (this, "SerialNumber");
+	diagSendResponse (rspWriteSN);
+
+    fctDiagStayInActiveSession ();
+}
+
+on diagRequest SeedLevel1_Request
+{
+//****************************************************************************
+// Diag Request to request a Seed to calculate the Key to change to Level 1
+// Service is only supported when Programming Session is active 
+//****************************************************************************
+    diagResponse this rspSecure;
+
+	if (intSession == kDEFAULT_SESSION)
+	{
+		diagSendNegativeResponse (this, 0x7e);
+		return;
+	}
+	if (diagGetSuppressResp (this) == 1) return; // Positive Response suppressed
+
+	dblSecureSeed = random (0xFFFF);
+	diagSetParameter (rspSecure, "SecuritySeed", dblSecureSeed);
+	diagSendResponse (rspSecure);
+
+    fctDiagStayInActiveSession ();
+}
+
+on diagRequest KeyLevel1_Send
+{
+//****************************************************************************
+// Diag Request to send calculated key to change to Level 1
+// Service is only supported when Programming Session is active 
+//****************************************************************************
+    diagResponse this rspSecure;
+
+	if (intSession == kDEFAULT_SESSION)
+	{
+		diagSendNegativeResponse (this, 0x7e);
+		return;
+	}
+	if (diagGetSuppressResp (this) == 1) return; // Positive Response suppressed
+
+	dblSecureKey = diagGetParameter (this, "SecurityKey");
+	if (dblSecureKey != kKEY)
+	{
+		diagSendNegativeResponse (this, 0x35);
+		intSession = kDEFAULT_SESSION;
+		return;
+	}
+    
+    intSecurityAccess = kUNLOCKED_LEVEL1;
+	diagSendResponse (rspSecure);
+
+    fctDiagStayInActiveSession ();
+}
+
+on diagRequest LEDs_Write
+{
+//****************************************************************************
+// Diag Request to write CANsiter's LED States
+//****************************************************************************
+    diagResponse this rspDataLED;
+    
+
+	if (intSession == kDEFAULT_SESSION)
+	{
+		diagSendNegativeResponse (this, 0x7E);
+		return;
+	}
+
+    dwrdLEDState = diagGetParameter (this, "LEDStatus");
+
+    fctSetLEDs ();
+	
+	diagSendResponse (rspDataLED);
+
+    fctDiagStayInActiveSession ();
+
+}
+on diagRequest Coding_Read
+{
+//****************************************************************************
+// Diag Request to read out CANsiter's Variant Coding
+//****************************************************************************
+    diagResponse this rspVariant;
+
+    if (intSession == kDEFAULT_SESSION || intSecurityAccess == kLOCKED)
+	{
+        diagSendNegativeResponse (this, 0x7e);
+		return;
+	}  
+    
+    diagSetParameter (rspVariant, "Codingstring.CountryType", dblVariantCountry);
+	diagSetParameter (rspVariant, "Codingstring.VehicleType", dblVariantType);
+	diagSetParameter (rspVariant, "Codingstring.SpecialAdjustment", dblVariantSpecial);
+	diagSendResponse (rspVariant);  
+
+    fctDiagStayInActiveSession ();
+}
+
+on diagRequest Coding_Write
+{
+//****************************************************************************
+// Diag Request to write CANsiter's Variant Coding
+//****************************************************************************
+    diagResponse this rspVariant;
+
+    if (intSession == kDEFAULT_SESSION || intSecurityAccess == kLOCKED)
+	{
+        diagSendNegativeResponse (this, 0x7e);
+		return;
+	}  
+
+    dblVariantCountry   = diagGetParameter (this, "Codingstring.CountryType");
+	dblVariantType      = diagGetParameter (this, "Codingstring.VehicleType");
+	dblVariantSpecial   = diagGetParameter (this, "Codingstring.SpecialAdjustment");
+	diagSendResponse (rspVariant);
+
+    fctDiagStayInActiveSession ();
+}
+
+on diagRequest CounterRoutine_Start
+{
+//****************************************************************************
+// Diag Request to start Counter Routine; while the Counter Routine is
+// running, the message 0x3a0 is sent on the bus cyclicly (user defined cycle
+// time) including a counter that is incremented with each sending by a 
+// user defined value. Both, cycle time and increment value are sent in the
+// diagnostics request.
+//****************************************************************************
+    diagResponse this rspCntRoutine;
+
+    if (intCntRoutineRun == kRUNNING)
+	{
+		diagSendNegativeResponse (this, 0x7E);
+		return;
+	}   
+
+    lngCycleCntRoutine   = diagGetParameter (this, "CounterCycle");
+    intStepValCntRoutine = diagGetParameter (this, "CounterStep");
+    
+    setTimerCyclic (tmrCntRoutine, lngCycleCntRoutine);
+
+    diagSendResponse (rspCntRoutine);
+
+    intCntRoutineRun = kRUNNING; 
+
+    fctDiagStayInActiveSession ();
+}
+
+on timer tmrCntRoutine
+{
+//****************************************************************************
+// This timer is used to send out message 0x3a0 with a user defined cycle time.
+// The timer is started using the diagnostics request CounterRoutine_Start; the
+// message is sent until the diagnostics request CounterRoutine_Stop is called.
+//****************************************************************************
+    
+    msgCntRoutine.DLC = 1;
+    bytCounterValue += intStepValCntRoutine;
+    msgCntRoutine.byte(0) = bytCounterValue;
+
+// Tx Communication has been disabled by diagnostics request
+    if (intComEnabled == kDISABLED) 
+        return;
+
+    output (msgCntRoutine);
+}
+
+on diagRequest CounterRoutine_Stop
+{
+//****************************************************************************
+// Diag Request to stop Counter Routine
+//****************************************************************************
+    diagResponse this rspCntRoutine;
+
+    if (intCntRoutineRun == kSTOPPED)
+	{
+		diagSendNegativeResponse (this, 0x7E);
+		return;
+	} 
+    
+    cancelTimer (tmrCntRoutine); 
+
+    diagSendResponse (rspCntRoutine);
+
+    intCntRoutineRun = kSTOPPED;
+
+    fctDiagStayInActiveSession ();
+}
+
+on diagRequest EnableRxAndDisableTx_Control
+{
+//****************************************************************************
+// Diag Request to disable CANister's send messages
+//****************************************************************************
+    diagResponse this rspComCtrl;
+	double	dblComStatus;
+
+	if (diagGetSuppressResp (this) == 1) 
+        return;
+
+	dblComStatus = diagGetParameter (this, "CommType");
+	
+    if (dblComStatus == 0x01) 
+        intComEnabled = kDISABLED;
+	else
+	{
+		diagSendNegativeResponse (this, 0x31);
+		return;
+	}
+
+	diagSendResponse (rspComCtrl);
+
+  fctDiagStayInActiveSession ();
+}
+
+on diagRequest EnableRxAndEnableTx_Control
+{
+//****************************************************************************
+// Diag Request to enable CANister's send messages
+//****************************************************************************
+    diagResponse this rspComCtrl;
+	double	dblComStatus;
+
+	if (diagGetSuppressResp (this) == 1) 
+        return;
+
+	dblComStatus = diagGetParameter (this, "CommType");
+	
+    if (dblComStatus == 0x01) 
+        intComEnabled = kENABLED;
+	else
+	{
+		diagSendNegativeResponse (this, 0x31);
+		return;
+	}
+
+	diagSendResponse (rspComCtrl);
+
+  fctDiagStayInActiveSession ();
+}
+
+on diagRequest SoftReset_Reset
+{
+//****************************************************************************
+// Diag Request to reset CANister's software
+//****************************************************************************
+    diagResponse this rspSoftReset;
+
+	fctInit ();
+
+	diagSendResponse (rspSoftReset);
+
+  fctDiagStayInActiveSession ();
+}
+
+on diagRequest HardReset_Reset
+{
+//****************************************************************************
+// Diag Request to reset CANister (hard reset)
+//****************************************************************************
+    diagResponse this rspHardReset;
+
+    fctInit ();
+    
+    intComEnabled = kDISABLED;
+    intHardReset  = kACTIVE;
+	
+    setTimer (tmrHardReset, 50);
+
+	  diagSendResponse (rspHardReset);
+
+    fctDiagStayInActiveSession ();
+}
+
+on timer tmrHardReset
+{
+//****************************************************************************
+// This timer is used to simulate the hard reset of CANiste. While hard reset
+// is active, no Tx communication is available, and Error Frames will be
+// sent for every Rx message.
+//****************************************************************************
+    
+    intComEnabled = kENABLED;
+    intHardReset  = kINACTIVE;
+}
+
+on message *
+{
+//*******************************************************************************
+// While hard reset is active, an Error Frames will be sent for every Rx message
+//*******************************************************************************
+    if (intHardReset == kINACTIVE)
+        return;
+    
+    setTimer (tmrErrorFrame, 0);
+}
+
+on key 'e'
+{
+    output (errorFrame);
+}
+
+on timer tmrErrorFrame
+{
+//****************************************************************************
+// This timer is used to send out message 0xa0 with a cycle time of 30ms.
+//****************************************************************************
+output (errorFrame);
+}
+
+on diagRequest Counter_Read
+{
+//****************************************************************************
+// Diag Request to read out counter from Counter Routine
+//****************************************************************************
+    diagResponse this rspCounterRead;
+    
+    if (intCntRoutineRun == kSTOPPED)
+	{
+		diagSendNegativeResponse (this, 0x22);
+		return;
+	} 
+
+	diagSetParameter (rspCounterRead, "CounterValue", bytCounterValue);
+	diagSendResponse (rspCounterRead);
+
+    fctDiagStayInActiveSession ();
+}
+
+on diagRequest TesterPresent_Send
+{
+//****************************************************************************
+// Tester Present is used to keep CANister in Programming session and unlocked
+// security level.
+//****************************************************************************
+    diagResponse this rspTesterPresent;
+
+	if (diagGetSuppressResp (this) == 1) return;
+	diagSendResponse (rspTesterPresent);
+
+    cancelTimer (tmrSecureTimer);
+    setTimer (tmrSecureTimer, 5000);
+}
+
+on sysvar sysvar::CANister::sysKey3
+{
+//****************************************************************************
+// When pressing Key 3, an entry into the fault memory is created
+//****************************************************************************
+
+    if (@this == 1) // debounce Key 3
+    {
+        if (random (9) > 5)
+        {
+            if (intMemDTC[1] == 0)
+            {
+                bytDTCCount++;
+                intMemDTC[1] = 1;
+            }
+            dwrdListOfDTC [1] = 0x000001;
+            fctDiagSaveEnvDataDTC (1);
+        }
+        else
+        {
+            if (intMemDTC[2] == 0)
+            {
+                bytDTCCount++;
+                intMemDTC[2] = 1;
+            }  
+            dwrdListOfDTC [2] = 0x000002;
+            fctDiagSaveEnvDataDTC (2);
+        }
+        
+    }
+}
+
+on diagRequest FaultMemory_ReadNumber
+{
+//****************************************************************************
+// Diag Request to read out number of fault memory entries
+//****************************************************************************   
+    diagResponse this rspReadDTCNumber;
+
+    dblDTCState = diagGetParameter (this, "DtcStatusbyte");
+
+    if (dblDTCState == 9)
+    {
+        diagSetParameter (rspReadDTCNumber, "DtcCount", bytDTCCount);
+        diagSetParameter (rspReadDTCNumber, "DtcStatusbyte", dblDTCState);
+    }
+
+    diagSendResponse (rspReadDTCNumber);
+
+    fctDiagStayInActiveSession ();
+}
+
+on diagRequest FaultMemory_ReadAllIdentified
+{
+//****************************************************************************
+// Diag Request to read out all identified entries in the fault memory
+//****************************************************************************   
+    diagResponse this rspReadAllDTC;
+    dword   dwrdLengthDiagResp;
+    int     i, m;
+    
+    m=0;
+    
+    dwrdLengthDiagResp = 3 + 4*bytDTCCount; // 3 Byte containting SID, DID + Statusbyte
+
+    dblDTCState = diagGetParameter (this, "DtcStatusbyte");
+
+    if (dblDTCState == 9)
+    {
+        diagResize (rspReadAllDTC, dwrdLengthDiagResp);
+        diagSetParameter (rspReadAllDTC, "DtcStatusbyte", dblDTCState);
+        for (i=1; i<kDTC_MAXNUMBER; i++)
+        {
+            if (intMemDTC[i] == 1)
+            {
+                diagSetComplexParameter (rspReadAllDTC, "ListOfDTC", m, "DTC", dwrdListOfDTC[i]);
+                diagSetComplexParameter (rspReadAllDTC, "ListOfDTC", m++, "DtcStatusbyte", 0x09);
+            }
+        }
+    }
+    diagSendResponse (rspReadAllDTC);
+
+    fctDiagStayInActiveSession ();
+}
+
+on diagRequest FaultMemory_Clear
+{
+//****************************************************************************
+// Diag Request to clear fault memory 
+//**************************************************************************** 
+    diagResponse this rspFaultMemClear;
+    int intDTC;
+    int i;
+    
+    if (intSession == kDEFAULT_SESSION || intSecurityAccess == kLOCKED)
+	{
+        
+		diagSendNegativeResponse (this, 0x7e);
+		return;
+	}
+
+    if (diagGetParameter (this, "GroupOfDtc") == 0xffffff)
+    {
+        bytDTCCount          = 0x00;
+        for (i=0; i<5; i++)
+        {
+            dwrdListOfDTC [i] = 0;
+            intMemDTC [i]     = 0;
+        }
+    }
+    else
+    {
+        intDTC = diagGetParameter (this, "GroupOfDtc");
+
+        intMemDTC [intDTC]      = 0;
+        dwrdListOfDTC [intDTC]  = 0x00;
+        bytDTCCount--;
+    }
+
+    diagSendResponse (rspFaultMemClear);
+
+    fctDiagStayInActiveSession ();
+}
+
+fctDiagStayInActiveSession ()
+{
+//****************************************************************************
+// Remain in active session and security level
+//**************************************************************************** 
+
+    cancelTimer (tmrSecureTimer);
+    setTimer (tmrSecureTimer, 5000);
+}
+
+on diagRequest FaultMemory_ReadEnvironmentData
+{
+//****************************************************************************
+// Diag Request to read Environment Data corresponding to a specific DTC
+//****************************************************************************  
+    diagResponse this rspReadEnvData;
+    dword dwrdDTC;
+    long lngReturn;
+    
+    dwrdDTC = diagGetParameter (this, "DTC"); 
+
+    //diagResize (rspReadEnvData, 12);
+    diagSetParameter (rspReadEnvData, "DTC", dwrdDTC);
+    diagSetParameter (rspReadEnvData, "DtcStatusbyte", 0x09);
+
+    //diagSetComplexParameter (rspReadEnvData,"ListOfDTC", 0, "envLEDs", bytLED_EnvDTC [dwrdDTC] );
+    //diagSetComplexParameter (rspReadEnvData,"ListOfDTC", 0, "envZaehler", bytSigCounter_EnvDTC[dwrdDTC]);
+    //diagSetComplexParameter (rspReadEnvData,"ListOfDTC", 0, "envDrehregler", wrdSigRotKnob_EnvDTC[dwrdDTC]);
+
+    lngReturn = diagSendResponse (rspReadEnvData);
+    //write ("%d", lngReturn);
+}
+
+fctDiagSaveEnvDataDTC (int intDTC)
+{
+//****************************************************************************
+// Function to save environment Data when DTC is written into fault memory
+//**************************************************************************** 
+
+    intDTC--;
+
+    bytLED_EnvDTC [intDTC] = fctLEDState1 (); 
+
+    bytSigCounter_EnvDTC [intDTC] = bytCounter;
+    
+    wrdSigRotKnob_EnvDTC [intDTC] = wrdRotKnobValue;
+    
+}
+

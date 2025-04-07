@@ -1,0 +1,43 @@
+Encoding: iso-8859-1
+D: Detected dtd version 6.0.120
+D: VCANdelaPersistorImpl::GetFileVersion: DTD version '6.0.120' detected
+I: Loading 'D:\SchulungsOrganisation\MakeOver\CANisterSimulation\CDD\CANister.cdd'...
+I:   dtd version: file 6.0.120, program 7.0.120
+D: Document supports the languages (de-DE,en-US)
+D: Document contains the uptodate languages (de-DE)
+D: Migration 6.5.2: Data type authorization of Document:
+D:  Following data types are allowed: Formula, Procedure, Piecwise Linear, Characteristic Curve, Packet
+D:  Following data types are not allowed: Multiplexer, Counter iteration, End-marker iteration, End-of-service iteration, Fixed count iteration
+D: Migration 6.5.2: allow only packet nesting
+D: Base64::decode: raw length 16337
+D: Base64::decode: 16122 groups
+D: Base64::decode: decoded is 12091 bytes
+D: Base64::decode: raw length 56
+D: Base64::decode: 54 groups
+D: Base64::decode: decoded is 40 bytes
+D: Template: Qualifier : Door, SaveNo : 2, Label : --
+I:   template data loaded
+D: Migration 6.5.2: Adding state group NRC '0x33' to service 'Write' of diagnostic instance 'SerialNumber'
+D: Migration 6.5.2: Adding state group NRC '0x7e' to service 'Request' of diagnostic instance 'SeedLevel1'
+D: Migration 6.5.2: Adding state group NRC '0x7e' to service 'Send' of diagnostic instance 'KeyLevel1'
+D: Migration 6.5.2: Adding state group NRC '0x7e' to service 'Clear' of diagnostic instance 'FaultMemory'
+D: Migration 6.5.2: Adding state group NRC '0x33' to service 'Clear' of diagnostic instance 'FaultMemory'
+D: Migration 6.5.2: Adding state group NRC '0x7e' to service 'Write' of diagnostic instance 'LEDs'
+D: Migration 6.5.2: Adding state group NRC '0x33' to service 'Read' of diagnostic instance 'Coding'
+D: Migration 6.5.2: Adding state group NRC '0x7e' to service 'Write' of diagnostic instance 'Coding'
+D: Migration 6.5.2: Adding state group NRC '0x33' to service 'Write' of diagnostic instance 'Coding'
+D: Migration 6.5.2: Adding state group NRC '0x7e' to service 'Control' of diagnostic instance 'DisableRxAndEnableTx'
+D: Migration 6.5.2: Adding state group NRC '0x7e' to service 'Control' of diagnostic instance 'DisableRxAndDisableTx'
+D: Migration 6.5.2: Adding state group NRC '0x7e' to service 'Control' of diagnostic instance 'EnableRxAndEnableTx'
+D: Migration 6.5.2: Adding state group NRC '0x7e' to service 'Control' of diagnostic instance 'EnableRxAndDisableTx'
+I:   variant 'CommonDiagnostics' loaded
+D: dropped the last but one component 'RC' of 'UNSUPPORTED_SERVICE_NR'
+I: Document version: 0.10
+I: Done loading.
+I: Checking consistency of document. This may take a while, please be patient...
+W: Warning: Text table data type 'SID-RQ-NR' contains 1 entries without any assigned text.
+W: Warning: Text table data type 'Identifier' contains 1 entries without any assigned text.
+I: Checking service prefixes in variant 'CommonDiagnostics' ... OK
+I: Checking request length for services supporting functional addressing for normal addressing scheme.
+I: ...Done.
+I: Document is consistent.

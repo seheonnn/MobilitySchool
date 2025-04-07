@@ -1,0 +1,31 @@
+﻿/*@!Encoding:65001*/
+includes
+{
+  
+}
+
+variables
+{
+  msTimer tmrCycle;
+}
+
+on start
+{
+  setTimerCyclic(tmrCycle, 200);
+}
+
+on timer tmrCycle 
+{
+  int avg;
+  avg = ($sigSensorA1 + $sigSensorA2 + $sigSensorB1 + $sigSensorB2) / 40;
+  $sigSensorValue = avg;
+  write("avg : %d", avg);
+}
+
+on message can1.* // gateway로 지정한 노드는 네트워크 지정해 주어야.
+{
+  message * gw;
+  gw = this; // this : 1번 channel
+  gw.can = 2; // channel 변경
+  output(gw);
+}

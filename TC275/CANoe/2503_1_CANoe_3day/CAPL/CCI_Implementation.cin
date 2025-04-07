@@ -1,0 +1,286 @@
+/*@@var:*/
+variables
+{
+  long gHandle = 0; // Physical connection
+  long gHandleFunctional = 0;
+  long gLastRequestWasReceivedFunctionally = 0; // ECU: indicate request mode
+  long gSendNextRequestFunctionally = 0; // Tester: force way request is sent
+}
+/*@@end*/
+
+/*@@caplFunc:_Diag_DataRequest(byte[],dword,long):*///callback
+_Diag_DataRequest( BYTE data[], DWORD count, long furtherSegments)
+{
+  if(gSendNextRequestFunctionally) // a request should be sent functionally
+  {
+    if( !gHandleFunctional)
+      return; // Not configured, so make sure an error is reported!
+
+    writeDbgLevel(1, "%s: Functional DataRequest %d byte: %02x ...",gECU, count, data[0]);
+
+    CanTpSendData(gHandleFunctional, data, count); // Send data on the functional connection
+    
+    gSendNextRequestFunctionally = 0;
+    
+    return;
+  }
+
+  // Send physically
+  //writeDbgLevel(1, "%s: DataRequest %d byte: %02x ...",gECU, count, data[0]);
+
+  CanTpSendData(gHandle, data, count); // Send data on the physical connection
+}
+/*@@end*/
+
+/*@@caplFunc:_Diag_SetChannelParameters():*///callback
+_Diag_SetChannelParameters()
+{
+  long value;
+
+  // Close a possible database connection to make sure that this module has full control over the // settings
+  if( CanTpGetDBConnection() > 0)
+  {
+    CanTpCloseConnection( CanTpGetDBConnection());
+  }
+
+  if( gHandle > 0)
+  {
+    CanTpCloseConnection( gHandle);
+    gHandle = 0;
+  }
+
+  if( gHandleFunctional > 0)
+  {
+    CanTpCloseConnection( gHandleFunctional);
+    gHandleFunctional = 0;
+  }
+
+  // Configure the physical connection
+  value = DiagGetCommParameter( "CANoe.AddressMode");
+
+  switch( value)
+  {
+    case 0: // Normal addressing
+      gHandle = CanTpCreateConnection(0);
+      CanTpSetTxIdentifier( gHandle, DiagGetCommParameter( "CANoe.TxId"));
+      CanTpSetRxIdentifier( gHandle, DiagGetCommParameter( "CANoe.RxId"));
+      writeDbgLevel(1, "%s: Normal [0x%x, 0x%x]", gECU, DiagGetCommParameter( "CANoe.TxId"), DiagGetCommParameter( "CANoe.RxId"));
+      break;
+    
+    case 1: // extended addressing
+      value = DiagGetCommParameter( "CANoe.BaseAddress");
+      if( value != -98)
+      {
+        // This is the extended/based address approach
+        gHandle = CanTpCreateConnection( 1);
+        CanTpSetBaseIdentifier( gHandle, value);
+        CanTpSetTargetAddress( gHandle, DiagGetCommParameter( "CANoe.TgtAddr"));
+        CanTpSetEcuAddress( gHandle, DiagGetCommParameter( "CANoe.EcuAddr"));
+        writeDbgLevel(1, "%s: Extended/base [0x%x, 0x%x, 0x%x]", gECU, DiagGetCommParameter( "CANoe.BaseAddress"),DiagGetCommParameter( "CANoe.TgtAddr"), DiagGetCommParameter( "CANoe.EcuAddr"));
+      }
+      else
+      {
+        // There is a TxId, therefore deactivate Id from adr etc.
+        gHandle = CanTpCreateConnection( 5);
+        value = DiagGetCommParameter( "CANoe.TxId");
+        CanTpSetTxIdentifier( gHandle, DiagGetCommParameter( "CANoe.TxId"));
+        CanTpSetRxIdentifier( gHandle, DiagGetCommParameter( "CANoe.RxId"));
+        CanTpSetTargetAddress( gHandle, DiagGetCommParameter( "CANoe.TgtAddr"));
+        CanTpSetEcuAddress( gHandle, DiagGetCommParameter( "CANoe.EcuAddr"));
+        writeDbgLevel(1, "%s: Extended/free [0x%x, 0x%x, 0x%x, 0x%x]", gECU, DiagGetCommParameter( "CANoe.TxId"), DiagGetCommParameter( "CANoe.RxId"), DiagGetCommParameter( "CANoe.TgtAddr"), DiagGetCommParameter( "CANoe.EcuAddr"));
+      }
+      break;
+
+    case 2: // NormalFixed addressing
+      gHandle = CanTpCreateConnection( 2);
+      CanTpSetTargetAddress( gHandle, DiagGetCommParameter( "CANoe.TgtAddr"));
+      CanTpSetEcuAddress( gHandle, DiagGetCommParameter( "CANoe.EcuAddr"));
+      CanTpSetTxPriority( gHandle, DiagGetCommParameter( "CANoe.TxPrio"));
+      CanTpSetFlowControlPriority( gHandle, DiagGetCommParameter( "CANoe.TxPrio"));
+      writeDbgLevel(1, "%s: NormalFixed [0x%x, 0x%x, 0x%x]", gECU, DiagGetCommParameter( "CANoe.TgtAddr"), DiagGetCommParameter( "CANoe.EcuAddr"), DiagGetCommParameter( "CANoe.TxPrio"));
+      break;
+
+    case 3: // Mixed addressing (29 bit)
+      gHandle = CanTpCreateConnection( 3);
+      CanTpSetTargetAddress( gHandle, DiagGetCommParameter( "CANoe.TgtAddr"));
+      CanTpSetEcuAddress( gHandle, DiagGetCommParameter( "CANoe.EcuAddr"));
+      CanTpSetTxPriority( gHandle, DiagGetCommParameter( "CANoe.TxPrio"));
+      CanTpSetFlowControlPriority( gHandle, DiagGetCommParameter( "CANoe.TxPrio"));
+      CanTpSetAddressExtension( gHandle, DiagGetCommParameter( "CANoe.AddrExt"));
+      writeDbgLevel(1, "%s: Mixed 29 bit [0x%x, 0x%x, 0x%x, 0x%x]", gECU, DiagGetCommParameter( "CANoe.TgtAddr"), DiagGetCommParameter( "CANoe.EcuAddr"), DiagGetCommParameter( "CANoe.TxPrio"), DiagGetCommParameter( "CANoe.AddrExt"));
+      break;
+
+    default:
+      write( "%s: Unsupported addressing mode!", gECU);
+  }
+
+  // Configure common protocol parameters
+  CanTpSetBlockSize( gHandle, DiagGetCommParameter( "CANoe.Blocksize"));
+  CanTpSetSTmin( gHandle, DiagGetCommParameter( "CANoe.STmin"));
+  value = DiagGetCommParameter( "CANoe.Padding");
+  CanTpSetPadding( gHandle, value);
+
+  if( value >= 0 && value < 256)
+  {
+    writeDbgLevel(1, "%s: Padding to DLC=8 with byte 0x%02x", gECU, value);
+  }
+  else if( value == -1)
+  {
+    writeDbgLevel(1, "%s: Using variable length DLC", gECU);
+  }
+  else if( value == 256)
+  {
+    writeDbgLevel(1, "%s: Padding to DLC=8 without initialization", gECU);
+  }
+  else
+  {
+    writeDbgLevel(1, "%s: Unknown padding mode!", gECU, value);
+  }
+
+  // Configure functional request connection, if defined
+  // Note that only one direction is configured!
+  value = DiagGetFunctionalGroupId();
+
+  if( value != -1)
+  {
+    // Does the first byte contain the target address, i.e. the group?
+    if( DiagGetFunctionalGroupExt() < 0)
+    {
+      // No target address in first byte, so either normal or normal fixed addressing
+      if( DiagGetFunctionalGroupIdMask() == -1)
+      {
+        // Using normal mode for functional requests
+        gHandleFunctional = CanTpCreateConnection( 0);
+        if( cIsTester)
+        {
+          CanTpSetTxIdentifier( gHandleFunctional, value);
+        }
+        else
+        {
+          CanTpSetRxIdentifier( gHandleFunctional, value);
+        }
+      }
+      else
+      {
+        // NormalFixed mode since the priority bits are masked out
+        gHandleFunctional = CanTpCreateConnection( 2);
+        CanTpSetAddressType( gHandleFunctional, 1);
+        
+        if( cIsTester)
+        { 
+          CanTpSetTargetAddress( gHandleFunctional, (value >> 8) & 0xFF);
+          CanTpSetEcuAddress( gHandleFunctional, value & 0xFF);
+        }
+        else
+        {
+          CanTpSetEcuAddress( gHandleFunctional, (value >> 8) & 0xFF);
+        }
+      }
+    }
+    else
+    {
+      // There is a target address in the first byte, so either extended or mixed mode
+      if( DiagGetFunctionalGroupIdMask() == -1)
+      {
+        // No masking, so use extended/free mode
+        gHandleFunctional = CanTpCreateConnection( 5);
+        if( cIsTester)
+        {
+          CanTpSetTxIdentifier( gHandleFunctional, value);
+          CanTpSetTargetAddress( gHandleFunctional, DiagGetFunctionalGroupExt());
+        }
+        else
+        {
+          CanTpSetRxIdentifier( gHandleFunctional, value);
+          CanTpSetEcuAddress( gHandleFunctional, DiagGetFunctionalGroupExt());
+        }
+      }
+      else
+      {
+        // There is masking, so mixed mode
+        gHandleFunctional = CanTpCreateConnection( 3);
+        CanTpSetAddressType( gHandleFunctional, 1);
+        CanTpSetAddressExtension( gHandleFunctional, DiagGetFunctionalGroupExt());
+
+        if( cIsTester)
+        {
+          CanTpSetTargetAddress( gHandleFunctional, (value >> 8) & 0xFF);
+          CanTpSetEcuAddress( gHandleFunctional, value & 0xFF);
+        }
+        else
+        {
+          CanTpSetEcuAddress( gHandleFunctional, (value >> 8) & 0xFF);
+        }
+      }
+    }
+  }
+}
+/*@@end*/
+
+/*@@caplFunc:CanTp_SendCon(long,dword):*///callback
+CanTp_SendCon( long handle, DWORD txCount)
+{
+  writeDbgLevel(1,"%s: CanTp_SendCon", gECU);
+  Diag_DataCon( txCount);
+}
+/*@@end*/
+
+/*@@caplFunc:CanTp_ErrorInd(long,long):*///callback
+CanTp_ErrorInd( long handle, long error)
+{
+  char cErrorText[12][30] = { "(no error)"
+                            , "Timeout while waiting for CF" // 1
+                            , "Timeout while waiting for FC" // 2
+                            , "Wrong Sequence Number" // 3
+                            , "TP_DLL busy" // 4
+                            , "Unexpected PDU" // 5
+                            , "Timeout waiting for Tx-Ack" // 6
+                            , "WFT Overrun" // 7
+                            , "Buffer overflow" // 8
+                            , "Wrong parameter" // 9
+                            , "Invalid FlowStatus received" // 10
+                            , "Transfer abort requested" // 11
+                            };
+
+  if( error < elcount(cErrorText))
+  {
+    writeDbgLevel( 1, "%s: CanTp_ErrorInd(%d): %s", gECU, error, cErrorText[error]);
+  }
+  else
+  {
+    writeDbgLevel( 1, "%s: CanTp_ErrorInd(%d): unknown error!", gECU, error);
+  }
+
+  Diag_ErrorInd( error);
+}
+/*@@end*/
+
+/*@@caplFunc:CanTp_ReceptionInd(long,byte[]):*///callback
+CanTp_ReceptionInd( long handle, BYTE data[])
+{
+  writeDbgLevel(1,"%s: CanTp_ReceptionInd", gECU);
+  
+  gLastRequestWasReceivedFunctionally = (handle == gHandleFunctional ? 1 : 0);
+  
+  Diag_DataInd( data, elcount( data), CanTpGetSenderAddress());
+}
+/*@@end*/
+
+/*@@caplFunc:CanTp_FirstFrameInd(long,dword):*///callback
+CanTp_FirstFrameInd( long handle, DWORD length)
+{
+  writeDbgLevel(1,"%s: CanTp_FirstFrameInd", gECU);
+  
+  diag_FirstFrameInd( 0, 1, length);
+}
+/*@@end*/
+
+/*@@caplFunc:_Diag_SetupChannelReq():*///callback
+_Diag_SetupChannelReq()
+{
+  // This callback function is mandatory in tester nodes
+  // If used in simulation nodes it is not called
+  Diag_SetupChannelCon();
+}
+/*@@end*/
+

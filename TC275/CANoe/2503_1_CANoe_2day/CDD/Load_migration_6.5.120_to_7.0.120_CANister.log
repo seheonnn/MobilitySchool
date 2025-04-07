@@ -1,0 +1,25 @@
+Encoding: iso-8859-1
+D: Detected dtd version 6.5.120
+D: VCANdelaPersistorImpl::GetFileVersion: DTD version '6.5.120' detected
+I: Loading 'D:\SchulungsOrganisation\MakeOver\CANisterSimulation\CDD\CANister.cdd'...
+I:   dtd version: file 6.5.120, program 7.0.120
+D: Document supports the languages (de-DE,en-US)
+D: Document contains the uptodate languages (de-DE,en-US)
+D: Base64::decode: raw length 16337
+D: Base64::decode: 16122 groups
+D: Base64::decode: decoded is 12091 bytes
+D: Base64::decode: raw length 56
+D: Base64::decode: 54 groups
+D: Base64::decode: decoded is 40 bytes
+D: Template: Qualifier : Door, SaveNo : 2, Label : --
+I:   template data loaded
+I:   variant 'CommonDiagnostics' loaded
+I: Document version: 0.10
+I: Done loading.
+I: Checking consistency of document. This may take a while, please be patient...
+W: Warning: Text table data type 'SID-RQ-NR' contains 1 entries without any assigned text.
+W: Warning: Text table data type 'Identifier' contains 1 entries without any assigned text.
+I: Checking service prefixes in variant 'CommonDiagnostics' ... OK
+I: Checking request length for services supporting functional addressing for normal addressing scheme.
+I: ...Done.
+I: Document is consistent.

@@ -1,0 +1,269 @@
+<?xml version="1.0"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=10.0.63.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=10.0.63.0, Culture=neutral, PublicKeyToken=null" Name="Panel" Children="Controls" ControlName="CCU_Control">
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=10.0.63.0, Culture=neutral, PublicKeyToken=null" Name="GroupBoxControl2" Children="Controls" ControlName="Group Box 2">
+      <Object Type="Vector.CANalyzer.Panels.Design.TrackBarControl, Vector.CANalyzer.Panels.CommonControls, Version=10.0.63.0, Culture=neutral, PublicKeyToken=null" Name="TrackBarControl4" Children="Controls" ControlName="Track Bar">
+        <Property Name="Name">TrackBarControl4</Property>
+        <Property Name="Size">304, 47</Property>
+        <Property Name="Location">10, 264</Property>
+        <Property Name="Maximum">1000</Property>
+        <Property Name="LargeChange">1</Property>
+        <Property Name="SmallChangeDouble">0.016</Property>
+        <Property Name="LargeChangeDouble">0.992</Property>
+        <Property Name="TickFrequencyDouble">0.016</Property>
+        <Property Name="MaximumDouble">1000</Property>
+        <Property Name="SymbolConfiguration">5;2;TrainingNetwork_DLL;CCU;frmSensorB;sigSensorB2;1;CAN;;-1;;;</Property>
+        <Property Name="TabIndex">3</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TrackBarControl, Vector.CANalyzer.Panels.CommonControls, Version=10.0.63.0, Culture=neutral, PublicKeyToken=null" Name="TrackBarControl3" Children="Controls" ControlName="Track Bar">
+        <Property Name="Name">TrackBarControl3</Property>
+        <Property Name="Size">304, 47</Property>
+        <Property Name="Location">9, 192</Property>
+        <Property Name="Maximum">1000</Property>
+        <Property Name="LargeChange">1</Property>
+        <Property Name="SmallChangeDouble">0.016</Property>
+        <Property Name="LargeChangeDouble">0.992</Property>
+        <Property Name="TickFrequencyDouble">0.016</Property>
+        <Property Name="MaximumDouble">1000</Property>
+        <Property Name="SymbolConfiguration">5;2;TrainingNetwork_DLL;CCU;frmSensorB;sigSensorB1;1;CAN;;-1;;;</Property>
+        <Property Name="TabIndex">3</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=10.0.63.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl4" Children="Controls" ControlName="Input/Output Box">
+        <Property Name="Name">TextBoxControl4</Property>
+        <Property Name="Size">171, 20</Property>
+        <Property Name="Location">9, 237</Property>
+        <Property Name="AlarmUpperTextColor">WindowText</Property>
+        <Property Name="ValueDecimalPlaces">3</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="ValueDisplay">Double</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmLowerTextColor">WindowText</Property>
+        <Property Name="AlarmGeneralSettings">1;2;0;1000</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="DescriptionText">sigSensorB2:</Property>
+        <Property Name="DescriptionSize">72, 20</Property>
+        <Property Name="SymbolConfiguration">5;2;TrainingNetwork_DLL;CCU;frmSensorB;sigSensorB2;1;CAN;;-1;;;</Property>
+        <Property Name="TabIndex">2</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TrackBarControl, Vector.CANalyzer.Panels.CommonControls, Version=10.0.63.0, Culture=neutral, PublicKeyToken=null" Name="TrackBarControl2" Children="Controls" ControlName="Track Bar">
+        <Property Name="Name">TrackBarControl2</Property>
+        <Property Name="Size">304, 47</Property>
+        <Property Name="Location">8, 118</Property>
+        <Property Name="Maximum">1000</Property>
+        <Property Name="LargeChange">1</Property>
+        <Property Name="SmallChangeDouble">0.016</Property>
+        <Property Name="LargeChangeDouble">0.992</Property>
+        <Property Name="TickFrequencyDouble">0.016</Property>
+        <Property Name="MaximumDouble">1000</Property>
+        <Property Name="SymbolConfiguration">5;2;TrainingNetwork_DLL;CCU;frmSensorA;sigSensorA2;1;CAN;;-1;;;</Property>
+        <Property Name="TabIndex">3</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=10.0.63.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl3" Children="Controls" ControlName="Input/Output Box">
+        <Property Name="Name">TextBoxControl3</Property>
+        <Property Name="Size">171, 20</Property>
+        <Property Name="Location">8, 165</Property>
+        <Property Name="AlarmUpperTextColor">WindowText</Property>
+        <Property Name="ValueDecimalPlaces">3</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="ValueDisplay">Double</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmLowerTextColor">WindowText</Property>
+        <Property Name="AlarmGeneralSettings">1;2;0;1000</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="DescriptionText">sigSensorB1:</Property>
+        <Property Name="DescriptionSize">72, 20</Property>
+        <Property Name="SymbolConfiguration">5;2;TrainingNetwork_DLL;CCU;frmSensorB;sigSensorB1;1;CAN;;-1;;;</Property>
+        <Property Name="TabIndex">2</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TrackBarControl, Vector.CANalyzer.Panels.CommonControls, Version=10.0.63.0, Culture=neutral, PublicKeyToken=null" Name="TrackBarControl1" Children="Controls" ControlName="Track Bar">
+        <Property Name="Name">TrackBarControl1</Property>
+        <Property Name="Size">304, 47</Property>
+        <Property Name="Location">7, 48</Property>
+        <Property Name="Maximum">1000</Property>
+        <Property Name="LargeChange">1</Property>
+        <Property Name="SmallChangeDouble">0.016</Property>
+        <Property Name="LargeChangeDouble">0.08</Property>
+        <Property Name="TickFrequencyDouble">0.016</Property>
+        <Property Name="MaximumDouble">1000</Property>
+        <Property Name="SymbolConfiguration">5;2;TrainingNetwork_DLL;CCU;frmSensorA;sigSensorA1;1;CAN;;-1;;;</Property>
+        <Property Name="TabIndex">1</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=10.0.63.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl2" Children="Controls" ControlName="Input/Output Box">
+        <Property Name="Name">TextBoxControl2</Property>
+        <Property Name="Size">171, 20</Property>
+        <Property Name="Location">7, 91</Property>
+        <Property Name="AlarmUpperTextColor">WindowText</Property>
+        <Property Name="ValueDecimalPlaces">3</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="ValueDisplay">Double</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmLowerTextColor">WindowText</Property>
+        <Property Name="AlarmGeneralSettings">1;2;0;1000</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="DescriptionText">sigSensorA2:</Property>
+        <Property Name="DescriptionSize">72, 20</Property>
+        <Property Name="SymbolConfiguration">5;2;TrainingNetwork_DLL;CCU;frmSensorA;sigSensorA2;1;CAN;;-1;;;</Property>
+        <Property Name="TabIndex">2</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=10.0.63.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl1" Children="Controls" ControlName="Input/Output Box">
+        <Property Name="Name">TextBoxControl1</Property>
+        <Property Name="Size">171, 20</Property>
+        <Property Name="Location">6, 21</Property>
+        <Property Name="AlarmUpperTextColor">WindowText</Property>
+        <Property Name="ValueDecimalPlaces">3</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="ValueDisplay">Double</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmLowerTextColor">WindowText</Property>
+        <Property Name="AlarmGeneralSettings">1;2;0;1000</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="DescriptionText">sigSensorA1:</Property>
+        <Property Name="DescriptionSize">72, 20</Property>
+        <Property Name="SymbolConfiguration">5;2;TrainingNetwork_DLL;CCU;frmSensorA;sigSensorA1;1;CAN;;-1;;;</Property>
+        <Property Name="TabIndex">0</Property>
+      </Object>
+      <Property Name="Name">GroupBoxControl2</Property>
+      <Property Name="Size">317, 317</Property>
+      <Property Name="Location">116, 12</Property>
+      <Property Name="Text">Sensor Control</Property>
+      <Property Name="TabIndex">1</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=10.0.63.0, Culture=neutral, PublicKeyToken=null" Name="GroupBoxControl1" Children="Controls" ControlName="Group Box">
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=10.0.63.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl8" Children="Controls" ControlName="Static Text">
+        <Property Name="Name">StaticTextControl8</Property>
+        <Property Name="Size">34, 13</Property>
+        <Property Name="Location">12, 283</Property>
+        <Property Name="Text">LED8</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=10.0.63.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl7" Children="Controls" ControlName="Static Text">
+        <Property Name="Name">StaticTextControl7</Property>
+        <Property Name="Size">34, 13</Property>
+        <Property Name="Location">12, 247</Property>
+        <Property Name="Text">LED7</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=10.0.63.0, Culture=neutral, PublicKeyToken=null" Name="SwitchControl8" ControlName="Switch/Indicator">
+        <Property Name="Name">SwitchControl8</Property>
+        <Property Name="Size">23, 30</Property>
+        <Property Name="Location">53, 274</Property>
+        <Property Name="StateCnt">2</Property>
+        <Property Name="Activation">Left</Property>
+        <Property Name="SwitchValues">1;2;0;1</Property>
+        <Property Name="SymbolConfiguration">5;2;TrainingNetwork_DLL;CCU;frmLamps;sigLED8;1;CAN;;-1;;;</Property>
+        <Property Name="TabIndex">2</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=10.0.63.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl6" Children="Controls" ControlName="Static Text">
+        <Property Name="Name">StaticTextControl6</Property>
+        <Property Name="Size">34, 13</Property>
+        <Property Name="Location">12, 211</Property>
+        <Property Name="Text">LED6</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=10.0.63.0, Culture=neutral, PublicKeyToken=null" Name="SwitchControl7" ControlName="Switch/Indicator">
+        <Property Name="Name">SwitchControl7</Property>
+        <Property Name="Size">23, 30</Property>
+        <Property Name="Location">53, 238</Property>
+        <Property Name="StateCnt">2</Property>
+        <Property Name="Activation">Left</Property>
+        <Property Name="SwitchValues">1;2;0;1</Property>
+        <Property Name="SymbolConfiguration">5;2;TrainingNetwork_DLL;CCU;frmLamps;sigLED7;1;CAN;;-1;;;</Property>
+        <Property Name="TabIndex">2</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=10.0.63.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl5" Children="Controls" ControlName="Static Text">
+        <Property Name="Name">StaticTextControl5</Property>
+        <Property Name="Size">34, 13</Property>
+        <Property Name="Location">12, 175</Property>
+        <Property Name="Text">LED5</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=10.0.63.0, Culture=neutral, PublicKeyToken=null" Name="SwitchControl6" ControlName="Switch/Indicator">
+        <Property Name="Name">SwitchControl6</Property>
+        <Property Name="Size">23, 30</Property>
+        <Property Name="Location">53, 202</Property>
+        <Property Name="StateCnt">2</Property>
+        <Property Name="Activation">Left</Property>
+        <Property Name="SwitchValues">1;2;0;1</Property>
+        <Property Name="SymbolConfiguration">5;2;TrainingNetwork_DLL;CCU;frmLamps;sigLED6;1;CAN;;-1;;;</Property>
+        <Property Name="TabIndex">2</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=10.0.63.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl4" Children="Controls" ControlName="Static Text">
+        <Property Name="Name">StaticTextControl4</Property>
+        <Property Name="Size">34, 13</Property>
+        <Property Name="Location">12, 139</Property>
+        <Property Name="Text">LED4</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=10.0.63.0, Culture=neutral, PublicKeyToken=null" Name="SwitchControl5" ControlName="Switch/Indicator">
+        <Property Name="Name">SwitchControl5</Property>
+        <Property Name="Size">23, 30</Property>
+        <Property Name="Location">53, 166</Property>
+        <Property Name="StateCnt">2</Property>
+        <Property Name="Activation">Left</Property>
+        <Property Name="SwitchValues">1;2;0;1</Property>
+        <Property Name="SymbolConfiguration">5;2;TrainingNetwork_DLL;CCU;frmLamps;sigLED5;1;CAN;;-1;;;</Property>
+        <Property Name="TabIndex">2</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=10.0.63.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl3" Children="Controls" ControlName="Static Text">
+        <Property Name="Name">StaticTextControl3</Property>
+        <Property Name="Size">34, 13</Property>
+        <Property Name="Location">12, 103</Property>
+        <Property Name="Text">LED3</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=10.0.63.0, Culture=neutral, PublicKeyToken=null" Name="SwitchControl4" ControlName="Switch/Indicator">
+        <Property Name="Name">SwitchControl4</Property>
+        <Property Name="Size">23, 30</Property>
+        <Property Name="Location">53, 130</Property>
+        <Property Name="StateCnt">2</Property>
+        <Property Name="Activation">Left</Property>
+        <Property Name="SwitchValues">1;2;0;1</Property>
+        <Property Name="SymbolConfiguration">5;2;TrainingNetwork_DLL;CCU;frmLamps;sigLED4;1;CAN;;-1;;;</Property>
+        <Property Name="TabIndex">2</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=10.0.63.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl2" Children="Controls" ControlName="Static Text">
+        <Property Name="Name">StaticTextControl2</Property>
+        <Property Name="Size">34, 13</Property>
+        <Property Name="Location">12, 67</Property>
+        <Property Name="Text">LED2</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=10.0.63.0, Culture=neutral, PublicKeyToken=null" Name="SwitchControl3" ControlName="Switch/Indicator">
+        <Property Name="Name">SwitchControl3</Property>
+        <Property Name="Size">23, 30</Property>
+        <Property Name="Location">53, 94</Property>
+        <Property Name="StateCnt">2</Property>
+        <Property Name="Activation">Left</Property>
+        <Property Name="SwitchValues">1;2;0;1</Property>
+        <Property Name="SymbolConfiguration">5;2;TrainingNetwork_DLL;CCU;frmLamps;sigLED3;1;CAN;;-1;;;</Property>
+        <Property Name="TabIndex">2</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=10.0.63.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl1" Children="Controls" ControlName="Static Text">
+        <Property Name="Name">StaticTextControl1</Property>
+        <Property Name="Size">34, 13</Property>
+        <Property Name="Location">12, 31</Property>
+        <Property Name="Text">LED1</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=10.0.63.0, Culture=neutral, PublicKeyToken=null" Name="SwitchControl2" ControlName="Switch/Indicator">
+        <Property Name="Name">SwitchControl2</Property>
+        <Property Name="Size">23, 30</Property>
+        <Property Name="Location">53, 58</Property>
+        <Property Name="StateCnt">2</Property>
+        <Property Name="Activation">Left</Property>
+        <Property Name="SwitchValues">1;2;0;1</Property>
+        <Property Name="SymbolConfiguration">5;2;TrainingNetwork_DLL;CCU;frmLamps;sigLED2;1;CAN;;-1;;;</Property>
+        <Property Name="TabIndex">2</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=10.0.63.0, Culture=neutral, PublicKeyToken=null" Name="SwitchControl1" ControlName="Switch/Indicator">
+        <Property Name="Name">SwitchControl1</Property>
+        <Property Name="Size">23, 30</Property>
+        <Property Name="Location">53, 22</Property>
+        <Property Name="StateCnt">2</Property>
+        <Property Name="Activation">Left</Property>
+        <Property Name="SwitchValues">1;2;0;1</Property>
+        <Property Name="SymbolConfiguration">5;2;TrainingNetwork_DLL;CCU;frmLamps;sigLED1;1;CAN;;-1;;;</Property>
+        <Property Name="TabIndex">0</Property>
+      </Object>
+      <Property Name="Name">GroupBoxControl1</Property>
+      <Property Name="Size">97, 317</Property>
+      <Property Name="Location">12, 12</Property>
+      <Property Name="Text">LED Control</Property>
+      <Property Name="TabIndex">0</Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">446, 340</Property>
+  </Object>
+</Panel>

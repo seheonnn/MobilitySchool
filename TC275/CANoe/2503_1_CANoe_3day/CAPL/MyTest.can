@@ -1,0 +1,23 @@
+﻿/*@!Encoding:65001*/
+includes
+{
+  
+}
+
+variables
+{
+  msTimer tmrCycle;
+  int gCounter;
+}
+
+on key 'a'
+{
+  setTimerCyclic(tmrCycle, 1000);
+}
+
+on timer tmrCycle
+{
+  gCounter++;
+  write("%d. execution", gCounter);
+}
+

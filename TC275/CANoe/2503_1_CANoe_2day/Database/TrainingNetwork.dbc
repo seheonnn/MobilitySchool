@@ -1,0 +1,315 @@
+VERSION ""
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_: XCPclient DiagTool GWC CCU CANister
+VAL_TABLE_ vtbSensorReqCause 15 "SNA" 2 "by Request 2" 1 "by Request 1" 0 "normal cycle" ;
+VAL_TABLE_ vtbErrorDescription 255 "ERROR" ;
+
+
+BO_ 1116 frmIdent: 8 CANister
+ SG_ sigIdentOSVer m2 : 40|16@1+ (1,0) [0|0] ""  DiagTool,GWC,CCU
+ SG_ sigIdentISOTPVer m3 : 40|16@1+ (1,0) [0|0] ""  DiagTool,GWC,CCU
+ SG_ sigIdentDiagVer m3 : 8|16@1+ (1,0) [0|0] ""  DiagTool,GWC,CCU
+ SG_ sigIdentCFG m2 : 8|32@1+ (1,0) [0|0] ""  DiagTool,GWC,CCU
+ SG_ sigIdentCANDrivVer m1 : 40|16@1+ (1,0) [0|0] ""  DiagTool,GWC,CCU
+ SG_ sigFrmCnt M : 0|8@1+ (1,0) [0|0] ""  GWC,DiagTool,CCU
+ SG_ sigIdentSerNo m1 : 8|32@1+ (1,0) [0|0] ""  GWC,DiagTool,CCU
+
+BO_ 906 frmMux: 8 CANister
+ SG_ sigReserved2 : 32|32@1+ (1,0) [0|0] ""  GWC
+ SG_ sigReserved1 : 0|32@1+ (1,0) [0|0] ""  GWC
+
+BO_ 252 frmString: 8 CANister
+ SG_ sigAscii8 : 56|8@1+ (1,0) [0|0] ""  GWC
+ SG_ sigAscii7 : 48|8@1+ (1,0) [0|0] ""  GWC
+ SG_ sigAscii6 : 40|8@1+ (1,0) [0|0] ""  GWC
+ SG_ sigAscii3 : 16|8@1+ (1,0) [0|0] ""  GWC
+ SG_ sigAscii2 : 8|8@1+ (1,0) [0|0] ""  GWC
+ SG_ sigAscii1 : 0|8@1+ (1,0) [0|0] ""  GWC
+ SG_ sigAscii5 : 32|8@1+ (1,0) [0|0] ""  GWC
+ SG_ sigAscii4 : 24|8@1+ (1,0) [0|0] ""  GWC
+
+BO_ 124 frmStatAB: 2 CANister
+ SG_ sigStateB1 : 8|8@1+ (1,0) [0|0] ""  GWC
+ SG_ sigStateA3 : 6|2@1+ (1,0) [0|0] ""  GWC
+ SG_ sigStateA2 : 2|4@1+ (1,0) [0|0] ""  GWC
+ SG_ sigStateA1 : 0|2@1+ (1,0) [0|0] ""  GWC
+
+BO_ 1794 frmDiagFuncRequest: 8 DiagTool
+ SG_ sigDiagFuncRequest2 : 32|32@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ sigDiagFuncRequest1 : 0|32@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1727 frmIOMsgCtrl: 1 CCU
+ SG_ sigIOMsgSwitch : 0|2@1+ (1,0) [0|3] ""  CANister
+
+BO_ 1904 frmCANisterInput: 8 CANister
+ SG_ sigPotiBox : 0|16@1- (0.18761726079,0) [0|100] ""  CCU
+ SG_ sigAnalogOutputIOcab : 16|16@1- (1,0) [0|0] ""  CCU
+ SG_ sigDigitalInputCANister : 32|16@1- (1,0) [0|0] ""  CCU
+ SG_ sigKeyBox : 48|1@1+ (1,0) [0|0] ""  CCU
+ SG_ sigSwitchBox : 49|1@1+ (1,0) [0|0] ""  CCU
+ SG_ sigRedLEDstate : 50|1@1+ (1,0) [0|0] ""  CCU
+
+BO_ 1365 frmCANdebug: 8 CANister
+ SG_ sigDebugType : 56|8@1- (1,0) [0|0] ""  DiagTool
+ SG_ sigDebugLong : 24|32@1+ (1,0) [0|0] ""  DiagTool
+ SG_ sigDebugWord : 8|16@1+ (1,0) [0|0] ""  DiagTool
+ SG_ sigDebugByte : 0|8@1+ (1,0) [0|0] ""  DiagTool
+
+BO_ 1281 frmXcpResponse: 8 CANister
+ SG_ sigXcpResponseData2 : 32|32@1+ (1,0) [0|0] ""  XCPclient
+ SG_ sigXcpResponseData1 : 0|32@1+ (1,0) [0|0] ""  XCPclient
+
+BO_ 1280 frmXcpRequest: 8 XCPclient
+ SG_ sigXcpRequestData2 : 32|32@1+ (1,0) [0|0] ""  CANister
+ SG_ sigXcpRequestData1 : 0|32@1+ (1,0) [0|0] ""  CANister
+
+BO_ 928 frmCounterRoutine: 1 CANister
+ SG_ sigCounterRoutine : 0|8@1+ (1,0) [0|0] ""  GWC
+
+BO_ 1792 frmDiagRequest: 8 DiagTool
+ SG_ sigDiagRequestData2 : 32|32@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ sigDiagRequestData1 : 0|32@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1536 frmDiagResponse: 8 CANister
+ SG_ sigDiagResponseData2 : 32|32@1+ (1,0) [0|0] ""  DiagTool
+ SG_ sigDiagResponseData1 : 0|32@1+ (1,0) [0|0] ""  DiagTool
+
+BO_ 122 frmLEDStatus: 3 CANister
+ SG_ sigLEDStat_PLUS : 19|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ sigLEDStat_MINUS : 18|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ sigLED_T5 : 17|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ sigLED_T1 : 16|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ sigLEDStat_08 : 7|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ sigLEDStat_07 : 6|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ sigLEDStat_06 : 5|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ sigLEDStat_05 : 4|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ sigLEDStat_04 : 3|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ sigLEDStat_03 : 2|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ sigLEDStat_02 : 1|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ sigLEDStat_01 : 0|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ sigLEDStat_StressA : 8|1@0+ (1,0) [0|1] ""  GWC,CCU
+ SG_ sigLEDStat_Status : 15|1@0+ (1,0) [0|1] ""  GWC,CCU
+ SG_ sigLEDStat_15 : 14|1@0+ (1,0) [0|1] ""  GWC,CCU
+ SG_ sigLEDStat_14 : 13|1@0+ (1,0) [0|1] ""  GWC,CCU
+ SG_ sigLEDStat_13 : 12|1@0+ (1,0) [0|1] ""  GWC,CCU
+ SG_ sigLEDStat_12 : 11|1@0+ (1,0) [0|1] ""  GWC,CCU
+ SG_ sigLEDStat_11 : 10|1@0+ (1,0) [0|1] ""  GWC,CCU
+ SG_ sigLEDStat_StressB : 9|1@0+ (1,0) [0|1] ""  GWC,CCU
+
+BO_ 672 frmStressA: 8 CANister
+ SG_ sigStressCounter : 7|8@0+ (1,0) [0|255] ""  CCU
+
+BO_ 673 frmStressB: 8 CANister
+ SG_ sigStressCounter : 7|8@0+ (1,0) [0|255] ""  CCU
+
+BO_ 123 frmSensorResult: 3 GWC
+ SG_ sigSensorValue : 15|16@0+ (0.0016,0) [0|100] "%"  CANister
+ SG_ sigReqCause : 3|4@0+ (1,0) [0|15] ""  CANister
+
+BO_ 753 frmSensorB: 8 CCU
+ SG_ sigSensorB2 : 23|16@0+ (0.016,0) [0|1000] ""  CANister,GWC
+ SG_ sigSensorB1 : 7|16@0+ (0.016,0) [0|1000] ""  CANister,GWC
+
+BO_ 752 frmSensorA: 8 CCU
+ SG_ sigSensorA2 : 23|16@0+ (0.016,0) [0|1000] ""  CANister,GWC
+ SG_ sigSensorA1 : 7|16@0+ (0.016,0) [0|1000] ""  CANister,GWC
+
+BO_ 419 frmKey8: 4 CANister
+ SG_ sigSignature : 7|32@0+ (1,0) [0|0] ""  CCU
+
+BO_ 160 frmKey12: 1 CANister
+ SG_ sigKey2 : 1|1@0+ (1,0) [0|1] ""  GWC,CCU
+ SG_ sigKey1 : 0|1@0+ (1,0) [0|1] ""  GWC,CCU
+
+BO_ 416 frmLamps: 1 CCU
+ SG_ sigLED8 : 7|1@0+ (1,0) [0|1] ""  CANister
+ SG_ sigLED7 : 6|1@0+ (1,0) [0|1] ""  CANister
+ SG_ sigLED6 : 5|1@0+ (1,0) [0|1] ""  CANister
+ SG_ sigLED5 : 4|1@0+ (1,0) [0|1] ""  CANister
+ SG_ sigLED4 : 3|1@0+ (1,0) [0|1] ""  CANister
+ SG_ sigLED3 : 2|1@0+ (1,0) [0|1] ""  CANister
+ SG_ sigLED2 : 1|1@0+ (1,0) [0|1] ""  CANister
+ SG_ sigLED1 : 0|1@0+ (1,0) [0|1] ""  CANister
+
+BO_ 417 frmStatus: 4 CANister
+ SG_ sigRotKnob : 9|10@0+ (0.097751710655,0) [0|100] "%"  CCU
+ SG_ sigKey8 : 31|1@0+ (1,0) [0|1] ""  CCU
+ SG_ sigKey7 : 30|1@0+ (1,0) [0|1] ""  CCU
+ SG_ sigKey6 : 29|1@0+ (1,0) [0|1] ""  CCU
+ SG_ sigKey5 : 28|1@0+ (1,0) [0|1] ""  CCU
+ SG_ sigKey4 : 27|1@0+ (1,0) [0|1] ""  CCU
+ SG_ sigKey3 : 26|1@0+ (1,0) [0|1] ""  CCU
+ SG_ sigKey2 : 25|1@0+ (1,0) [0|1] ""  CCU
+ SG_ sigKey1 : 24|1@0+ (1,0) [0|1] ""  CCU
+ SG_ sigCounter : 7|8@0+ (1,0) [0|254] ""  CCU
+
+
+
+BA_DEF_  "DatabaseVersion" STRING ;
+BA_DEF_ BO_  "DiagState" ENUM  "No","Yes";
+BA_DEF_ BO_  "DiagResponse" ENUM  "No","Yes","vector_leerstring";
+BA_DEF_ BO_  "DiagRequest" ENUM  "No","Yes","vector_leerstring";
+BA_DEF_  "Manufacturer" STRING ;
+BA_DEF_ BU_  "NodeLayerModules" STRING ;
+BA_DEF_  "BusType" STRING ;
+BA_DEF_ SG_  "GenSigStartValue" FLOAT 0 1215752192;
+BA_DEF_ SG_  "GenSigSendType" ENUM  "Cyclic","OnWrite","OnWriteWithRepetition","OnChange","OnChangeWithRepetition","IfActive","IfActiveWithRepetition","NoSigSendType","NotUsed","NotUsed","NotUsed","NotUsed","NotUsed";
+BA_DEF_ SG_  "GenSigInactiveValue" INT 0 100000;
+BA_DEF_ BO_  "GenMsgSendType" ENUM  "Cyclic","NotUsed","NotUsed","NotUsed","NotUsed","Cyclic","NotUsed","IfActive","NoMsgSendType","NotUsed","vector_leerstring";
+BA_DEF_ BO_  "GenMsgNrOfRepetition" INT 0 999999;
+BA_DEF_ BO_  "GenMsgDelayTime" INT 0 1000;
+BA_DEF_ BO_  "GenMsgCycleTime" INT 0 50000;
+BA_DEF_ BO_  "GenMsgCycleTimeFast" INT 0 50000;
+BA_DEF_ BO_  "GenMsgILSupport" ENUM  "No","Yes";
+BA_DEF_ BO_  "GenMsgFastOnStart" INT 0 100000;
+BA_DEF_ BO_  "GenMsgStartDelayTime" INT 0 100000;
+BA_DEF_DEF_  "DatabaseVersion" "";
+BA_DEF_DEF_  "DiagState" "No";
+BA_DEF_DEF_  "DiagResponse" "No";
+BA_DEF_DEF_  "DiagRequest" "No";
+BA_DEF_DEF_  "Manufacturer" "Vector";
+BA_DEF_DEF_  "NodeLayerModules" "";
+BA_DEF_DEF_  "BusType" "CAN";
+BA_DEF_DEF_  "GenSigStartValue" 0;
+BA_DEF_DEF_  "GenSigSendType" "Cyclic";
+BA_DEF_DEF_  "GenSigInactiveValue" 0;
+BA_DEF_DEF_  "GenMsgSendType" "NoMsgSendType";
+BA_DEF_DEF_  "GenMsgNrOfRepetition" 0;
+BA_DEF_DEF_  "GenMsgDelayTime" 0;
+BA_DEF_DEF_  "GenMsgCycleTime" 200;
+BA_DEF_DEF_  "GenMsgCycleTimeFast" 20;
+BA_DEF_DEF_  "GenMsgILSupport" "Yes";
+BA_DEF_DEF_  "GenMsgFastOnStart" 0;
+BA_DEF_DEF_  "GenMsgStartDelayTime" 0;
+BA_ "DatabaseVersion" "1.1";
+BA_ "BusType" "CAN";
+BA_ "GenMsgILSupport" BO_ 1116 0;
+BA_ "GenMsgCycleTime" BO_ 1116 2000;
+BA_ "GenMsgILSupport" BO_ 906 0;
+BA_ "GenMsgCycleTime" BO_ 906 1000;
+BA_ "GenMsgILSupport" BO_ 252 0;
+BA_ "GenMsgILSupport" BO_ 124 0;
+BA_ "GenMsgCycleTime" BO_ 124 100;
+BA_ "DiagState" BO_ 1794 1;
+BA_ "GenMsgILSupport" BO_ 1904 0;
+BA_ "GenMsgCycleTime" BO_ 1904 10;
+BA_ "GenMsgILSupport" BO_ 1365 0;
+BA_ "GenMsgILSupport" BO_ 1281 0;
+BA_ "GenMsgILSupport" BO_ 928 0;
+BA_ "GenMsgNrOfRepetition" BO_ 928 1;
+BA_ "GenMsgCycleTime" BO_ 928 1000;
+BA_ "DiagRequest" BO_ 1792 1;
+BA_ "GenMsgILSupport" BO_ 1536 0;
+BA_ "DiagResponse" BO_ 1536 1;
+BA_ "GenMsgILSupport" BO_ 122 0;
+BA_ "GenMsgCycleTime" BO_ 122 0;
+BA_ "GenMsgILSupport" BO_ 672 0;
+BA_ "GenMsgILSupport" BO_ 673 0;
+BA_ "GenMsgCycleTime" BO_ 123 500;
+BA_ "GenMsgCycleTimeFast" BO_ 123 20;
+BA_ "GenMsgCycleTime" BO_ 753 250;
+BA_ "GenMsgCycleTime" BO_ 752 250;
+BA_ "GenMsgILSupport" BO_ 419 0;
+BA_ "GenMsgCycleTime" BO_ 419 0;
+BA_ "GenMsgILSupport" BO_ 160 0;
+BA_ "GenMsgNrOfRepetition" BO_ 160 2;
+BA_ "GenMsgCycleTimeFast" BO_ 160 30;
+BA_ "GenMsgCycleTime" BO_ 160 0;
+BA_ "GenMsgCycleTime" BO_ 416 123;
+BA_ "GenMsgILSupport" BO_ 417 0;
+BA_ "GenSigStartValue" SG_ 1116 sigIdentOSVer 0;
+BA_ "GenSigInactiveValue" SG_ 1116 sigIdentOSVer 0;
+BA_ "GenSigStartValue" SG_ 1116 sigIdentISOTPVer 0;
+BA_ "GenSigInactiveValue" SG_ 1116 sigIdentISOTPVer 0;
+BA_ "GenSigStartValue" SG_ 1116 sigIdentDiagVer 0;
+BA_ "GenSigInactiveValue" SG_ 1116 sigIdentDiagVer 0;
+BA_ "GenSigStartValue" SG_ 1116 sigIdentCFG 0;
+BA_ "GenSigInactiveValue" SG_ 1116 sigIdentCFG 0;
+BA_ "GenSigStartValue" SG_ 1116 sigIdentCANDrivVer 0;
+BA_ "GenSigInactiveValue" SG_ 1116 sigIdentCANDrivVer 0;
+BA_ "GenSigStartValue" SG_ 1116 sigFrmCnt 0;
+BA_ "GenSigInactiveValue" SG_ 1116 sigFrmCnt 0;
+BA_ "GenSigStartValue" SG_ 1116 sigIdentSerNo 0;
+BA_ "GenSigInactiveValue" SG_ 1116 sigIdentSerNo 0;
+BA_ "GenSigSendType" SG_ 1727 sigIOMsgSwitch 5;
+BA_ "GenSigSendType" SG_ 1904 sigPotiBox 1;
+BA_ "GenSigSendType" SG_ 1904 sigAnalogOutputIOcab 1;
+BA_ "GenSigSendType" SG_ 1904 sigDigitalInputCANister 1;
+BA_ "GenSigSendType" SG_ 1904 sigKeyBox 1;
+BA_ "GenSigSendType" SG_ 1904 sigSwitchBox 1;
+BA_ "GenSigSendType" SG_ 1904 sigRedLEDstate 1;
+BA_ "GenSigSendType" SG_ 1365 sigDebugType 5;
+BA_ "GenSigSendType" SG_ 1365 sigDebugLong 5;
+BA_ "GenSigSendType" SG_ 1365 sigDebugWord 5;
+BA_ "GenSigSendType" SG_ 1365 sigDebugByte 5;
+BA_ "GenSigSendType" SG_ 1281 sigXcpResponseData2 1;
+BA_ "GenSigSendType" SG_ 1281 sigXcpResponseData1 1;
+BA_ "GenSigSendType" SG_ 1280 sigXcpRequestData2 1;
+BA_ "GenSigSendType" SG_ 1280 sigXcpRequestData1 1;
+BA_ "GenSigSendType" SG_ 928 sigCounterRoutine 6;
+BA_ "GenSigSendType" SG_ 1792 sigDiagRequestData2 1;
+BA_ "GenSigSendType" SG_ 1792 sigDiagRequestData1 1;
+BA_ "GenSigSendType" SG_ 1536 sigDiagResponseData2 1;
+BA_ "GenSigSendType" SG_ 1536 sigDiagResponseData1 1;
+BA_ "GenSigSendType" SG_ 122 sigLEDStat_PLUS 1;
+BA_ "GenSigSendType" SG_ 122 sigLEDStat_MINUS 1;
+BA_ "GenSigSendType" SG_ 122 sigLED_T5 1;
+BA_ "GenSigSendType" SG_ 122 sigLED_T1 1;
+BA_ "GenSigSendType" SG_ 122 sigLEDStat_08 1;
+BA_ "GenSigSendType" SG_ 122 sigLEDStat_07 1;
+BA_ "GenSigSendType" SG_ 122 sigLEDStat_06 1;
+BA_ "GenSigSendType" SG_ 122 sigLEDStat_05 1;
+BA_ "GenSigSendType" SG_ 122 sigLEDStat_04 1;
+BA_ "GenSigSendType" SG_ 122 sigLEDStat_03 1;
+BA_ "GenSigSendType" SG_ 122 sigLEDStat_02 1;
+BA_ "GenSigSendType" SG_ 122 sigLEDStat_01 1;
+BA_ "GenSigSendType" SG_ 122 sigLEDStat_StressA 1;
+BA_ "GenSigSendType" SG_ 122 sigLEDStat_Status 1;
+BA_ "GenSigSendType" SG_ 122 sigLEDStat_15 1;
+BA_ "GenSigSendType" SG_ 122 sigLEDStat_14 1;
+BA_ "GenSigSendType" SG_ 122 sigLEDStat_13 1;
+BA_ "GenSigSendType" SG_ 122 sigLEDStat_12 1;
+BA_ "GenSigSendType" SG_ 122 sigLEDStat_11 1;
+BA_ "GenSigSendType" SG_ 122 sigLEDStat_StressB 1;
+BA_ "GenSigSendType" SG_ 123 sigReqCause 5;
+BA_ "GenSigSendType" SG_ 419 sigSignature 3;
+BA_ "GenSigSendType" SG_ 160 sigKey2 6;
+BA_ "GenSigSendType" SG_ 160 sigKey1 6;
+VAL_ 124 sigStateA1 1 "ON" 0 "OFF" ;
+VAL_ 1727 sigIOMsgSwitch 3 "SNA" 2 "NOT_USED" 1 "INPUT_MSG_START" 0 "INPUT_MSG_STOP" ;
+VAL_ 123 sigReqCause 15 "SNA" 2 "by Request 2" 1 "by Request 1" 0 "normal cycle" ;
+VAL_ 417 sigCounter 255 "ERROR" ;
+

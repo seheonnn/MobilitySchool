@@ -1,0 +1,11 @@
+1,If,signal::TrainingNetwork::CANister::frmStatus::sigCounter::CAN::CAN1,<=,100,0,,False,False,False
+1,Set,signal::TrainingNetwork::CCU::frmLamps::sigLED1::CAN::CAN1,=,1,0,,False,False,False
+1,Set CAN Cyclic Frame,message::TrainingNetwork::CCU::frmLamps::CAN::CAN1,cycle time (ms),200,200,,False,False,False
+1,Check,signal::TrainingNetwork::CCU::frmLamps::sigLED1::CAN::CAN1,==,1,0,,False,False,False
+1,Write Text,sigCounter<=100,,,0,,False,False,False
+1,Else If,signal::TrainingNetwork::CANister::frmStatus::sigCounter::CAN::CAN1,>,100,0,,False,False,False
+1,Set,signal::TrainingNetwork::CCU::frmLamps::sigLED1::CAN::CAN1,=,0,0,,False,False,False
+1,Set CAN Cyclic Frame,message::TrainingNetwork::CCU::frmLamps::CAN::CAN1,cycle time (ms),200,200,,False,False,False
+1,Check,signal::TrainingNetwork::CCU::frmLamps::sigLED1::CAN::CAN1,==,0,0,,False,False,False
+1,Write Text,sigCounter>100,,,0,,False,False,False
+1,End If,,,,0,,False,False,False

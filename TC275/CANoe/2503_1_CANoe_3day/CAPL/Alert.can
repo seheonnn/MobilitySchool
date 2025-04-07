@@ -1,0 +1,23 @@
+﻿/*@!Encoding:65001*/
+includes
+{
+  
+}
+
+variables
+{
+  
+}
+
+on message frmLEDStatus
+{
+  int on_count;
+  on_count = this.sigLEDStat_04.phys + this.sigLEDStat_05.phys
+            + this.sigLEDStat_06.phys + this.sigLEDStat_07.phys;
+  
+  if (on_count >= 3) {
+    @sysvar::My::ind = 1;
+  } else {
+    @sysvar::My::ind = 0;
+  }
+}

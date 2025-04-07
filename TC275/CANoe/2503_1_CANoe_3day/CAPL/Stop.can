@@ -1,0 +1,26 @@
+﻿/*@!Encoding:65001*/
+includes
+{
+  
+}
+
+variables
+{
+  
+}
+
+on message frmStatus
+{
+  if (this.sigKey8 == 1) {
+    write("key pressed");
+    stop();
+  }
+  output(this);
+}
+
+on message * { // 정의하지 않은 모든 메시지
+  if (this.id == 0x7B) {
+    write("0x7V Recived");
+  }
+  output(this);
+}

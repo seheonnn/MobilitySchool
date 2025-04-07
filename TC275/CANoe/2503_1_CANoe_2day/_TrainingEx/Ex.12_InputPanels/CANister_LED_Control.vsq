@@ -1,0 +1,9 @@
+1,Map,signal::TrainingNetwork::CCU::frmLamps::sigLED1::CAN::CAN1,=,sysvar::CCU::Led1::2::Integer,0,,False,False,False
+1,Map,signal::TrainingNetwork::CCU::frmLamps::sigLED2::CAN::CAN1,=,sysvar::CCU::Led2::2::Integer,0,,False,False,False
+1,Map,signal::TrainingNetwork::CCU::frmLamps::sigLED3::CAN::CAN1,=,sysvar::CCU::Led3::2::Integer,0,,False,False,False
+1,Map,signal::TrainingNetwork::CCU::frmLamps::sigLED4::CAN::CAN1,=,sysvar::CCU::Led4::2::Integer,0,,False,False,False
+1,Map,signal::TrainingNetwork::CCU::frmLamps::sigLED5::CAN::CAN1,=,sysvar::CCU::Led5::2::Integer,0,,False,False,False
+1,Map,signal::TrainingNetwork::CCU::frmLamps::sigLED6::CAN::CAN1,=,sysvar::CCU::Led6::2::Integer,0,,False,False,False
+1,Map,signal::TrainingNetwork::CCU::frmLamps::sigLED7::CAN::CAN1,=,sysvar::CCU::Led7::2::Integer,0,,False,False,False
+1,Map,signal::TrainingNetwork::CCU::frmLamps::sigLED8::CAN::CAN1,=,sysvar::CCU::Led8::2::Integer,0,,False,False,False
+1,Send CAN Frame,message::TrainingNetwork::CCU::frmLamps::CAN::CAN1,,,123,,False,False,False

@@ -1,0 +1,59 @@
+﻿/*@!Encoding:65001*/
+includes
+{
+  
+}
+
+variables
+{
+  
+}
+/*
+on signal sigKey3
+{
+  // if (getSignal(sigKey3) == 1)
+  if ($sigKey3 == 1) { // <- RxSig
+    $sigLED3 = 1; // setSignal(sigLED3, 1); TxSig -> IL MSG
+  } else {
+    $sigLED3 = 0;
+  }
+} */
+
+/*
+on signal frmStatus::sigKey2
+{
+  if ($frmStatus::sigKey2 == 1) {
+    $sigLED2 = 1; 
+  } else {
+    $sigLED2 = 0;
+  }
+} */
+
+on signal frmStatus::sigKey2
+{
+  $sigLED2 = $frmStatus::sigKey2;
+}
+
+on signal sigKey3
+{
+  if ($sigKey3 == 1) {
+      $sigLED3 = !$sigLED3;
+  }
+}
+
+on signal sigKey4
+{
+  if ($sigKey4 == 1) {
+    Toggle(sigLED4);
+    Toggle(sigLED5);
+    Toggle(sigLED6);
+  }
+}
+
+void Toggle(signal * symbol) {
+  if ($symbol == 1) {
+    $symbol = 0;
+  } else {
+    $symbol = 1;
+  }   
+}

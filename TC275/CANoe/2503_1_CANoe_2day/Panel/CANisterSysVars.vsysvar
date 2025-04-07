@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<systemvariables version="4">
+  <namespace name="" comment="" interface="">
+    <namespace name="CANister" comment="" interface="">
+      <variable anlyzLocal="0" readOnly="false" valueSequence="false" unit="" name="sysKey1" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" />
+      <variable anlyzLocal="0" readOnly="false" valueSequence="false" unit="" name="sysKey11" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" />
+      <variable anlyzLocal="0" readOnly="false" valueSequence="false" unit="" name="sysKey12" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" />
+      <variable anlyzLocal="0" readOnly="false" valueSequence="false" unit="" name="sysKey15" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" />
+      <variable anlyzLocal="0" readOnly="false" valueSequence="false" unit="" name="sysKey16" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" />
+      <variable anlyzLocal="0" readOnly="false" valueSequence="false" unit="" name="sysKey2" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" />
+      <variable anlyzLocal="0" readOnly="false" valueSequence="false" unit="" name="sysKey3" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" />
+      <variable anlyzLocal="0" readOnly="false" valueSequence="false" unit="" name="sysKey4" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" />
+      <variable anlyzLocal="0" readOnly="false" valueSequence="false" unit="" name="sysKey5" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" />
+      <variable anlyzLocal="0" readOnly="false" valueSequence="false" unit="" name="sysKey6" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" />
+      <variable anlyzLocal="0" readOnly="false" valueSequence="false" unit="" name="sysKey7" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" />
+      <variable anlyzLocal="0" readOnly="false" valueSequence="false" unit="" name="sysKey8" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" />
+      <variable anlyzLocal="0" readOnly="false" valueSequence="false" unit="" name="sysKeyMax" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" />
+      <variable anlyzLocal="0" readOnly="false" valueSequence="false" unit="" name="sysKeyMaxMax" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" />
+      <variable anlyzLocal="0" readOnly="false" valueSequence="false" unit="" name="sysKeyMin" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" />
+      <variable anlyzLocal="0" readOnly="false" valueSequence="false" unit="" name="sysKeyMinMin" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" />
+      <variable anlyzLocal="0" readOnly="false" valueSequence="false" unit="" name="sysLED1" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" />
+      <variable anlyzLocal="0" readOnly="false" valueSequence="false" unit="" name="sysLED11" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" />
+      <variable anlyzLocal="0" readOnly="false" valueSequence="false" unit="" name="sysLED12" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" />
+      <variable anlyzLocal="0" readOnly="false" valueSequence="false" unit="" name="sysLED13" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" />
+      <variable anlyzLocal="0" readOnly="false" valueSequence="false" unit="" name="sysLED14" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" />
+      <variable anlyzLocal="0" readOnly="false" valueSequence="false" unit="" name="sysLED15" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" />
+      <variable anlyzLocal="0" readOnly="false" valueSequence="false" unit="" name="sysLED17" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" />
+      <variable anlyzLocal="0" readOnly="false" valueSequence="false" unit="" name="sysLED18" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" />
+      <variable anlyzLocal="0" readOnly="false" valueSequence="false" unit="" name="sysLED19" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" />
+      <variable anlyzLocal="0" readOnly="false" valueSequence="false" unit="" name="sysLED2" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" />
+      <variable anlyzLocal="0" readOnly="false" valueSequence="false" unit="" name="sysLED20" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" />
+      <variable anlyzLocal="0" readOnly="false" valueSequence="false" unit="" name="sysLED3" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" />
+      <variable anlyzLocal="0" readOnly="false" valueSequence="false" unit="" name="sysLED4" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" />
+      <variable anlyzLocal="0" readOnly="false" valueSequence="false" unit="" name="sysLED5" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" />
+      <variable anlyzLocal="0" readOnly="false" valueSequence="false" unit="" name="sysLED6" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" />
+      <variable anlyzLocal="0" readOnly="false" valueSequence="false" unit="" name="sysLED7" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" />
+      <variable anlyzLocal="0" readOnly="false" valueSequence="false" unit="" name="sysLED8" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" />
+      <variable anlyzLocal="0" readOnly="false" valueSequence="false" unit="" name="sysLEDStatus" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" />
+      <variable anlyzLocal="0" readOnly="false" valueSequence="false" unit="" name="sysLEDStressA" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" />
+      <variable anlyzLocal="0" readOnly="false" valueSequence="false" unit="" name="sysLEDStressB" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" />
+    </namespace>
+  </namespace>
+</systemvariables>
